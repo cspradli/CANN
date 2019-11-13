@@ -27,12 +27,3 @@ double tanh_(double x){
 double d_tanh(double x){
     return 1 - pow((2/1+exp(-2*x) -1), 2);
 }
-
-
-int main(int argc, char const *argv[])
-{
-    printf("in main\n");
-    printf("%f\n", sigmoid(2));
-    exit(0);
-}
-
