@@ -1,4 +1,21 @@
+#include <gsl/gsl_matrix.h>
+#include <gsl/gsl_linalg.h>
+#include <gsl/gsl_blas.h>
+#include <gsl/gsl_vector.h>
 
+void test_vector(int in);
+
+void test_matrix(int x, int y);
+
+double init_weights();
+
+gsl_vector* init_vector(int size);
+
+gsl_matrix* init_matrix(int sizeX, int sizeY);
+
+void print_vector(gsl_vector *in);
+
+void print_matrix(gsl_matrix *in);
 /**
  * Sigmoid activation function
  * Function which is plotted as 'S' shaped graph
