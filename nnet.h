@@ -4,6 +4,8 @@
 #include <gsl/gsl_vector.h>
 
 
+void init_model(int num_inputs, int num_hidden, int num_outputs, int num_training, int numhidden_layers, int epochs, int trainingOrder[], double training_in[][num_inputs], double training_out[][num_outputs]);
+
 /**
  * Takes a vector and returns same matrix with random values between 0.0 and 1.0
  **/
@@ -68,4 +70,8 @@ double tanh_(double x);
  * Derivative of tanh function
  **/
 double d_tanh(double x);
+
+void swap(int *a, int *b);
+
+void shuffle(int arr[], int n);
 

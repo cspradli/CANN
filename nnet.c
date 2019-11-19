@@ -10,7 +10,45 @@
 #include "nnet.h"
 
 
+void init_model(int num_inputs, int num_hidden, int num_outputs, int num_training, int num_hiddenlayers, int epochs, int training_order[], double training_in[][num_inputs], double training_out[][num_outputs]){
+    gsl_vector *hidden, *output, *hiddenBias, *outBias;
+    gsl_matrix *hiddenWeights, *outputWeights;
+    hidden = init_vector(num_hidden);
+    output = init_vector(num_outputs);
+    hiddenBias = init_vector(num_hidden);
+    outBias = init_vector(num_outputs);
+    hiddenWeights = init_matrix(num_inputs, num_hidden);
+    matrixInit_random(hiddenWeights);
+    outputWeights = init_matrix(num_hidden, num_outputs);
+    matrixInit_random(outputWeights);
 
+    for (int n = 0; n < epochs; n++){
+        shuffle(training_order, num_training);
+        for (int x = 0; x < num_training; x++){
+            int i = training_order[x];
+
+            //Compute hidden layer activation
+            for (int j = 0; j < num_hidden; j++){
+                double activation = gsl_vector_get(hiddenBias, j);
+                for (int k = 0; k < num_inputs; k++){
+                    activation += training_in[i][k]*gsl_matrix_get(hiddenWeights, j, k);
+                }
+                gsl_vector_set(hidden, j, sigmoid(activation));
+            }
+
+            //Comput output layer activation
+            for (int j = 0; j < num_outputs; j++){
+                double activation = gsl_vector_get(outBias, j);
+                for (int k = 0; k < num_hidden; k++){
+                    activation += gsl_vector_get(hidden, k) * gsl_matrix_get(outputWeights, k, j);
+                }
+                gsl_vector_set(output, j, sigmoid(activation));
+            }
+        }
+    }
+
+    
+}
 
 
 
@@ -83,5 +121,19 @@ void matrixInit_random(gsl_matrix *my_mat){
         }
     }
     return;
+}
+
+void swap(int *a, int *b){
+    int temp = *a;
+    *a = *b;
+    *b = temp;
+}
+
+void shuffle(int arr[], int n){
+    srand( time(NULL) );
+    for (int i = n-1; i > 0; i--){
+        int j = rand() % (i+1);
+        swap(&arr[i], &arr[j]);
+    }
 }
 
