@@ -48,13 +48,16 @@ gsl_matrix* init_matrix(int sizeX, int sizeY){
 }
 
 void print_vector(gsl_vector *in){
+    printf("\n");
     for (int y = 0; y < in->size; y++){
         double ret = gsl_vector_get(in, y);
         printf("|%f|\n", ret);
-    }   
+    }
+    printf("\n");
 }
 
 void print_matrix(gsl_matrix *in){
+    printf("\n");
     for (int a = 0; a < in->size1; a++){
         printf("|");
         for (int b = 0; b < in->size2; b++){
@@ -63,6 +66,7 @@ void print_matrix(gsl_matrix *in){
         }
         printf("|\n");
     }
+    printf("\n");
 }
 
 void vectorInit_random(gsl_vector *my_vect){
