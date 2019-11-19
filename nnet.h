@@ -3,9 +3,9 @@
 #include <gsl/gsl_blas.h>
 #include <gsl/gsl_vector.h>
 
-void test_vector(int in);
+void vectorInit_random(gsl_vector *my_vect);
 
-gsl_matrix *matrixInit_random(int x, int y);
+void matrixInit_random(gsl_matrix *my_mat);
 
 double init_weights();
 

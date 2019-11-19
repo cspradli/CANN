@@ -10,32 +10,21 @@
 #include "nnet.h"
 
 
-void test_vector(int in){
-    gsl_vector *my_vect;
-    my_vect = init_vector(in);
-    printf("Setting vector to %d\n", in);
-    for (int i = 0; i < in; i++){
-        gsl_vector_set(my_vect, i, init_weights());
-        
-    }
-    for (int y = 0; y < my_vect->size; y++){
-        double ret = gsl_vector_get(my_vect, y);
-        printf("|%f|\n", ret);
-    }
+void vectorInit_random(gsl_vector *my_vect){
 
-    gsl_vector_free(my_vect);
+    for (int i = 0; i < my_vect->size; i++){
+        gsl_vector_set(my_vect, i, init_weights());   
+    }
+    return;
 }
 
-gsl_matrix *matrixInit_random(int x, int y){
-    gsl_matrix *my_mat;
-    my_mat = init_matrix(x, y);
-    printf("Created matric of size %d, %d\n", x, y);
+void matrixInit_random(gsl_matrix *my_mat){
     for (int i = 0; i < my_mat->size1; i++){
         for (int j = 0; j < my_mat->size2; j++){
             gsl_matrix_set(my_mat, i, j, init_weights());
         }
     }
-    return my_mat;
+    return;
 }
 
 
