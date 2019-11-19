@@ -5,7 +5,7 @@
 
 void test_vector(int in);
 
-void test_matrix(int x, int y);
+gsl_matrix *matrixInit_random(int x, int y);
 
 double init_weights();
 

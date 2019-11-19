@@ -26,7 +26,7 @@ void test_vector(int in){
     gsl_vector_free(my_vect);
 }
 
-void test_matrix(int x, int y){
+gsl_matrix *matrixInit_random(int x, int y){
     gsl_matrix *my_mat;
     my_mat = init_matrix(x, y);
     printf("Created matric of size %d, %d\n", x, y);
@@ -35,15 +35,7 @@ void test_matrix(int x, int y){
             gsl_matrix_set(my_mat, i, j, init_weights());
         }
     }
-    for (int a = 0; a < my_mat->size1; a++){
-        printf("|");
-        for (int b = 0; b < my_mat->size2; b++){
-            double ret = gsl_matrix_get(my_mat, a, b);
-            printf(" %f ", ret);
-        }
-        printf("|\n");
-    }
-    gsl_matrix_free(my_mat);
+    return my_mat;
 }
 
 
