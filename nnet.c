@@ -11,12 +11,14 @@
 
 
 void init_model(int num_inputs, int num_hidden, int num_outputs, int num_training, int num_hiddenlayers, int epochs, int training_order[], double training_in[][num_inputs], double training_out[][num_outputs]){
-    gsl_vector *hidden, *output, *hiddenBias, *outBias;
+    gsl_vector *hidden, *output, *hiddenBias, *outBias, *deltaHidden, *deltaOut;
     gsl_matrix *hiddenWeights, *outputWeights;
     hidden = init_vector(num_hidden);
     output = init_vector(num_outputs);
     hiddenBias = init_vector(num_hidden);
     outBias = init_vector(num_outputs);
+    deltaHidden = init_vector(num_hidden);
+    deltaOut = init_vector(num_outputs);
     hiddenWeights = init_matrix(num_inputs, num_hidden);
     matrixInit_random(hiddenWeights);
     outputWeights = init_matrix(num_hidden, num_outputs);
@@ -44,6 +46,23 @@ void init_model(int num_inputs, int num_hidden, int num_outputs, int num_trainin
                 }
                 gsl_vector_set(output, j, sigmoid(activation));
             }
+            
+            //Compute change in output weights
+            for (int j = 0; j < num_outputs; j++){
+                double dError = (training_out[i][j]-gsl_vector_get(output, j));
+                gsl_vector_set(deltaOut, j, (dError * d_sigmoid(gsl_vector_get(output, j))));
+            }
+            
+            //Compute change in hidden weights
+            for (int j = 0; j < num_hidden; j++){
+                double dError = 0.0f;
+                for (int k = 0; k < num_outputs; k++){
+                    dError += (gsl_vector_get(deltaOut, k) * gsl_matrix_get(outputWeights, j, k));
+                }
+                gsl_vector_set(deltaHidden, j, (dError * d_sigmoid(gsl_vector_get(hidden, j))));
+            }
+
+            
         }
     }
 
@@ -111,6 +130,7 @@ void vectorInit_random(gsl_vector *my_vect){
     for (int i = 0; i < my_vect->size; i++){
         gsl_vector_set(my_vect, i, init_weights());   
     }
+    //gsl_vector_set_all(my_vect, init_weights());
     return;
 }
 

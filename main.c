@@ -13,20 +13,17 @@ int main(int argc, char const *argv[])
     gsl_matrix *my_mat;
     my_mat = init_matrix(5,5);
     print_matrix(my_mat);
-    gsl_matrix *trn_dest;
-    trn_dest = init_matrix(5,5);
     vectorInit_random(my_vect);
     print_vector(my_vect);
 
     matrixInit_random(my_mat);
     print_matrix(my_mat);
 
-    gsl_matrix_transpose_memcpy(trn_dest, my_mat);
-    print_matrix(trn_dest);
-
+    gsl_matrix_transpose(my_mat);
+    printf("Transpose Vector\n");
+    print_matrix(my_mat);
     gsl_vector_free(my_vect);
     gsl_matrix_free(my_mat);
-    gsl_matrix_free(trn_dest);
     return 0;
 
 }
