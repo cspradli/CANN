@@ -6,8 +6,6 @@
 
 void init_model(int num_inputs, int num_hidden, int num_outputs, int num_training, int numhidden_layers, int epochs, int trainingOrder[], double training_in[][num_inputs], double training_out[][num_outputs]);
 
-void init_model_vectorized(int num_inputs, int num_hidden,int num_outputs, int num_training, int num_hiddenlayers, int epochs, int training_order[], double training_in[][num_inputs],double training_out[][num_outputs]);
-
 /**
  * Takes a vector and returns same matrix with random values between 0.0 and 1.0
  **/
