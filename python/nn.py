@@ -19,7 +19,7 @@ for t in range(500):
     h = x.dot(w1)
     h_relu = np.maximum(h, 0)
     y_pred = h_relu.dot(w2)
-
+    np.dot
     # Compute and print loss
     loss = np.square(y_pred - y).sum()
     print(t, loss)

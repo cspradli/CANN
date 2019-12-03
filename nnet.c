@@ -10,6 +10,30 @@
 #include "nnet.h"
 
 
+void init_model_vectorized(int num_inputs, int num_hidden,int num_outputs, int num_training, int num_hiddenlayers, int epochs, int training_order[], double training_in[][num_inputs],double training_out[][num_outputs]){
+    gsl_vector *hidden;
+    gsl_vector *output;
+    gsl_vector *hiddenBias;
+    gsl_vector *outBias;
+    gsl_vector *deltaHidden;
+    gsl_vector *deltaOut;
+    gsl_matrix *hiddenWeights;
+    gsl_matrix *outputWeights;
+    hidden = init_vector(num_hidden);
+    output = init_vector(num_outputs);
+    hiddenBias = init_vector(num_hidden);
+    outBias = init_vector(num_outputs);
+    deltaHidden = init_vector(num_hidden);
+    deltaOut = init_vector(num_outputs);
+    hiddenWeights = init_matrix(num_inputs, num_hidden);
+    matrixInit_random(hiddenWeights);
+    outputWeights = init_matrix(num_hidden, num_outputs);
+    matrixInit_random(outputWeights);
+    double lr = 0.1f;
+
+    //hidden = gsl_matrix_transpose();
+}
+
 void init_model(int num_inputs, int num_hidden, int num_outputs, int num_training, int num_hiddenlayers, int epochs, int training_order[], double training_in[][num_inputs], double training_out[][num_outputs]){
     gsl_vector *hidden;
     gsl_vector *output;
