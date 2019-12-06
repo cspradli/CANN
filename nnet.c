@@ -9,8 +9,32 @@
 #include <math.h>
 #include "nnet.h"
 
+cann_double *init_model_double(int num_inputs, int num_hidden, int num_outputs, int num_training, int num_hiddenlayers, int epochs, int training_order[], double training_in[][num_inputs], double training_out[][num_outputs]){
+    cann_double *nnet;
+    nnet = malloc(sizeof(cann_double) + sizeof(double)*((num_hidden+num_inputs)+(num_hidden+num_outputs)+(num_hidden+num_hidden+num_outputs)+((num_hidden+num_hidden+num_outputs)-num_inputs)));
+    if (!nnet) return 0;
+    double hiddenLayer[num_hidden];
+    double outputLayer[num_outputs];
+    double hiddenLayerBias[num_hidden];
+    double outputLayerBias[num_outputs];
+    double hiddenWeights[num_inputs][num_hidden];
+    double outputWeights[num_hidden][num_outputs];
+    nnet->num_inputs = num_inputs;
+    nnet->num_hidden = num_hidden;
+    nnet->num_outputs = num_outputs;
+    nnet->hidden = hiddenLayer;
+    nnet->output = outputLayer;
+    nnet->hiddenBias = hiddenLayerBias;
+    nnet->outBias = outputLayerBias;
+    nnet->hiddenWeights = hiddenWeights;
+    nnet->outputWeights = outputWeights;
+    return nnet;
+}
 
-void init_model(int num_inputs, int num_hidden, int num_outputs, int num_training, int num_hiddenlayers, int epochs, int training_order[], double training_in[][num_inputs], double training_out[][num_outputs]){
+
+cann *init_model(int num_inputs, int num_hidden, int num_outputs, int num_training, int num_hiddenlayers, int epochs, int training_order[], double training_in[][num_inputs], double training_out[][num_outputs]){
+    cann *nnet;
+    nnet = malloc(sizeof(cann));
     gsl_vector *hidden;
     gsl_vector *output;
     gsl_vector *hiddenBias;
@@ -90,6 +114,108 @@ void init_model(int num_inputs, int num_hidden, int num_outputs, int num_trainin
             
         }
     }
+    nnet->deltaHidden = deltaHidden;
+    nnet->deltaOut = deltaOut;
+    nnet->hidden = hidden;
+    nnet->hiddenBias = hiddenBias;
+    nnet->hiddenWeights = hiddenWeights;
+    nnet->lr = lr;
+    nnet->num_hidden = num_hidden;
+    nnet->num_inputs = num_inputs;
+    nnet->num_outputs = num_outputs;
+    nnet->outBias = outBias;
+    nnet->outputWeights = outputWeights;
+    nnet->total_perceptrons = (num_hidden + num_inputs + num_outputs);
+    nnet->total_weights = num_hidden;
+    printf("Vector Hidden: \n");
+    print_vector(hidden);
+    printf("Vector out\n");
+    print_vector(output);
+    printf("Weights:\n");
+    printf("HIDDEN: \n");
+    print_matrix(hiddenWeights);
+    printf("OUTPUT: \n");
+    print_matrix(outputWeights);
+    printf("HIDDEN BIAS: \n");
+    print_vector(hiddenBias);
+    printf("Final output bias: \n");
+    print_vector(outBias);
+    return nnet;
+}
+
+cann *train_model(cann *input_model, int num_hidden, int num_inputs, int num_outputs, int num_training, int epochs, int training_order[], double training_in[][num_inputs], double training_out[][num_outputs]){
+    gsl_vector *hidden = input_model->hidden;
+    gsl_vector *output = input_model->output;
+    gsl_vector *hiddenBias = input_model->hiddenBias;
+    gsl_vector *outBias = input_model->outBias;
+    gsl_vector *deltaHidden = input_model->deltaHidden;
+    gsl_vector *deltaOut = input_model->deltaOut;
+    gsl_matrix *hiddenWeights = input_model->hiddenWeights;
+    gsl_matrix *outputWeights = input_model->outputWeights;
+    //int num_hidden = input_model->num_hidden;
+    printf("hello 1\n");
+    int lr = input_model->lr;
+        for (int n = 0; n < epochs; n++){
+        shuffle(training_order, num_training);
+        for (int x = 0; x < num_training; x++){
+            int i = training_order[x];
+            //Compute hidden layer activation
+            for (int j = 0; j < num_hidden; j++){
+                double activation = gsl_vector_get(hiddenBias, j);
+                for (int k = 0; k < num_inputs; k++){
+                    activation += training_in[i][k]*gsl_matrix_get(hiddenWeights, k, j);
+                }
+                gsl_vector_set(hidden, j, sigmoid(activation));
+            }
+            //print_vector(hidden);
+            printf("hello 2\n");
+            //Comput output layer activation
+            for (int j = 0; j < num_outputs; j++){
+                double activation = gsl_vector_get(outBias, j);
+                printf("hello %d\n", j);
+                for (int k = 0; k < num_hidden; k++){
+                    printf("hello 11%d\n", k);
+                    activation += (gsl_vector_get(hidden, k) * gsl_matrix_get(outputWeights, k, j));
+                }
+                gsl_vector_set(output, j, sigmoid(activation));
+                
+            }
+            printf("hello 3\n");
+            //printf("Input %f %f Output: %f\n", training_in[i][0], training_in[i][1], gsl_vector_get(output, i));
+            //Compute change in output weights
+            for (int j = 0; j < num_outputs; j++){
+                double dError = (training_out[i][j]-gsl_vector_get(output, j));
+                gsl_vector_set(deltaOut, j, (dError * d_sigmoid(gsl_vector_get(output, j))));
+            }
+            printf("hello 4\n");
+            //Compute change in hidden weights
+            for (int j = 0; j < num_hidden; j++){
+                double dError = 0.0f;
+                for (int k = 0; k < num_outputs; k++){
+                    dError += (gsl_vector_get(deltaOut, k) * gsl_matrix_get(outputWeights, j, k));
+                }
+                gsl_vector_set(deltaHidden, j, (dError * d_sigmoid(gsl_vector_get(hidden, j))));
+            }
+            
+            for (int j = 0; j < num_outputs; j++){
+                double tempa = gsl_vector_get(outBias, j);
+                gsl_vector_set(outBias, j, (tempa + (gsl_vector_get(deltaOut, j) * lr)));
+                for (int k =0; k < num_hidden; k++){
+                    double tempb = gsl_matrix_get(outputWeights, k, j);
+                    gsl_matrix_set(outputWeights, k, j, (tempb + (gsl_vector_get(hidden, k)*gsl_vector_get(deltaOut, j)*lr)));
+                }
+            }
+            for (int j = 0; j < num_hidden; j++){
+                double tempa = gsl_vector_get(hiddenBias, j);
+                gsl_vector_set(hiddenBias, j, (tempa + (gsl_vector_get(deltaHidden, j) * lr)));
+                for (int k =0; k < num_hidden; k++){
+                    double tempb = gsl_matrix_get(hiddenWeights, k, j);
+                    gsl_matrix_set(hiddenWeights, k, j, (tempb + (training_in[i][k]*gsl_vector_get(deltaHidden, j)*lr)));
+                }
+            }
+            
+        }
+    }
 
     printf("Vector Hidden: \n");
     print_vector(hidden);
@@ -104,15 +230,7 @@ void init_model(int num_inputs, int num_hidden, int num_outputs, int num_trainin
     print_vector(hiddenBias);
     printf("Final output bias: \n");
     print_vector(outBias);
-    gsl_vector_free(hidden);
-    gsl_vector_free(output);
-    gsl_vector_free(hiddenBias);
-    gsl_vector_free(outBias);
-    gsl_vector_free(deltaHidden);
-    gsl_vector_free(deltaOut);
-    gsl_matrix_free(hiddenWeights);
-    gsl_matrix_free(outputWeights);
-
+    return input_model;
 }
 
 

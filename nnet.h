@@ -3,9 +3,42 @@
 #include <gsl/gsl_blas.h>
 #include <gsl/gsl_vector.h>
 
+typedef struct cann{
+    int num_inputs;
+    int num_hidden;
+    int num_outputs;
+    int total_weights;
+    int total_perceptrons;
+    double lr;
+    gsl_vector *hidden;
+    gsl_vector *output;
+    gsl_vector *hiddenBias;
+    gsl_vector *outBias;
+    gsl_vector *deltaHidden;
+    gsl_vector *deltaOut;
+    gsl_matrix *hiddenWeights;
+    gsl_matrix *outputWeights;
+} cann;
 
-void init_model(int num_inputs, int num_hidden, int num_outputs, int num_training, int numhidden_layers, int epochs, int trainingOrder[], double training_in[][num_inputs], double training_out[][num_outputs]);
+typedef struct cann_double{
+    int num_inputs;
+    int num_hidden;
+    int num_outputs;
+    double lr;
+    double *hidden;
+    double *output;
+    double *hiddenBias;
+    double *outBias;
+    double **hiddenWeights;
+    double **outputWeights;
+} cann_double;
 
+cann_double *init_model_double(int num_inputs, int num_hidden, int num_outputs, int num_training, int numhidden_layers, int epochs, int trainingOrder[], double training_in[][num_inputs], double training_out[][num_outputs]);
+
+
+cann *init_model(int num_inputs, int num_hidden, int num_outputs, int num_training, int numhidden_layers, int epochs, int trainingOrder[], double training_in[][num_inputs], double training_out[][num_outputs]);
+
+cann *train_model(cann *input_model, int num_hidden, int num_inputs, int num_outputs, int num_training, int epochs, int training_order[], double training_in[][num_inputs], double training_out[][num_outputs]);
 /**
  * Takes a vector and returns same matrix with random values between 0.0 and 1.0
  **/

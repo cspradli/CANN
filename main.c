@@ -30,7 +30,12 @@ int main(int argc, char const *argv[])
     int trainingorder[] = {0,1,2,3};
     double training_outputs[4][1] = { {0.0f},{1.0f},{1.0f},{0.0f} };
     double training_inputs[4][2] = { {0.0f,0.0f},{1.0f,0.0f},{0.0f,1.0f},{1.0f,1.0f} };
-    init_model(numInputs, 2, numOutputs, numTrainingSets, 1, 100000, trainingorder, training_inputs, training_outputs);
+    cann *my_nnet;
+    my_nnet = init_model(numInputs, 2, numOutputs, numTrainingSets, 1, 100000, trainingorder, training_inputs, training_outputs);
+    //my_nnet = train_model(my_nnet, 2, numInputs, numOutputs, numTrainingSets, 1000, trainingorder, training_inputs, training_outputs);
+    printf("From main");
+    print_vector(my_nnet->hidden);
+    free(my_nnet);
     return 0;
 
 }
