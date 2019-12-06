@@ -13,6 +13,9 @@ cann_double *init_model_double(int num_inputs, int num_hidden, int num_outputs, 
     cann_double *nnet;
     nnet = malloc(sizeof(cann_double) + sizeof(double)*((num_hidden+num_inputs)+(num_hidden+num_outputs)+(num_hidden+num_hidden+num_outputs)+((num_hidden+num_hidden+num_outputs)-num_inputs)));
     if (!nnet) return 0;
+    double *ptr = nnet->hiddenWeights;
+    double *ptr2 = nnet->outputWeights;
+    
     double hiddenLayer[num_hidden];
     double outputLayer[num_outputs];
     double hiddenLayerBias[num_hidden];
@@ -54,7 +57,7 @@ cann *init_model(int num_inputs, int num_hidden, int num_outputs, int num_traini
     outputWeights = init_matrix(num_hidden, num_outputs);
     matrixInit_random(outputWeights);
     double lr = 0.1f;
-
+    /*
     for (int n = 0; n < epochs; n++){
         shuffle(training_order, num_training);
         for (int x = 0; x < num_training; x++){
@@ -113,7 +116,7 @@ cann *init_model(int num_inputs, int num_hidden, int num_outputs, int num_traini
             }
             
         }
-    }
+    }*/
     nnet->deltaHidden = deltaHidden;
     nnet->deltaOut = deltaOut;
     nnet->hidden = hidden;

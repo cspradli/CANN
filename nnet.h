@@ -20,6 +20,13 @@ typedef struct cann{
     gsl_matrix *outputWeights;
 } cann;
 
+typedef struct twoD
+{
+    double **array;
+    size_t rows;
+    size_t cols;
+}twoD;
+
 typedef struct cann_double{
     int num_inputs;
     int num_hidden;
@@ -29,8 +36,8 @@ typedef struct cann_double{
     double *output;
     double *hiddenBias;
     double *outBias;
-    double **hiddenWeights;
-    double **outputWeights;
+    twoD *hiddenWeights;
+    twoD *outputWeights;
 } cann_double;
 
 cann_double *init_model_double(int num_inputs, int num_hidden, int num_outputs, int num_training, int numhidden_layers, int epochs, int trainingOrder[], double training_in[][num_inputs], double training_out[][num_outputs]);
@@ -39,6 +46,10 @@ cann_double *init_model_double(int num_inputs, int num_hidden, int num_outputs, 
 cann *init_model(int num_inputs, int num_hidden, int num_outputs, int num_training, int numhidden_layers, int epochs, int trainingOrder[], double training_in[][num_inputs], double training_out[][num_outputs]);
 
 cann *train_model(cann *input_model, int num_hidden, int num_inputs, int num_outputs, int num_training, int epochs, int training_order[], double training_in[][num_inputs], double training_out[][num_outputs]);
+
+void makeTwoD(struct twoD *p);
+
+void freeTwoD(struct twoD *p);
 /**
  * Takes a vector and returns same matrix with random values between 0.0 and 1.0
  **/
