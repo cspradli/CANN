@@ -36,6 +36,9 @@ int main(int argc, char const *argv[])
     printf("From main");
     print_vector(my_nnet->hidden);
     free(my_nnet);
+    cann_double *nnet;
+    nnet = init_model_double(numInputs, 2, numOutputs);
+    free(nnet);
     return 0;
 
 }

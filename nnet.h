@@ -29,6 +29,8 @@ typedef struct twoD
 
 typedef struct cann_double{
     int num_inputs;
+    int num_weights;
+    int num_bias;
     int num_hidden;
     int num_outputs;
     double lr;
@@ -36,11 +38,11 @@ typedef struct cann_double{
     double *output;
     double *hiddenBias;
     double *outBias;
-    twoD *hiddenWeights;
-    twoD *outputWeights;
+    double *hidden_weights; 
+    double *output_weights;
 } cann_double;
 
-cann_double *init_model_double(int num_inputs, int num_hidden, int num_outputs, int num_training, int numhidden_layers, int epochs, int trainingOrder[], double training_in[][num_inputs], double training_out[][num_outputs]);
+cann_double *init_model_double(int num_inputs, int num_hidden, int num_outputs);
 
 
 cann *init_model(int num_inputs, int num_hidden, int num_outputs, int num_training, int numhidden_layers, int epochs, int trainingOrder[], double training_in[][num_inputs], double training_out[][num_outputs]);
@@ -50,6 +52,10 @@ cann *train_model(cann *input_model, int num_hidden, int num_inputs, int num_out
 void makeTwoD(struct twoD *p);
 
 void freeTwoD(struct twoD *p);
+
+void print_array(double input[], int length);
+
+void print_mat(double input[], int lengthX, int lengthY);
 /**
  * Takes a vector and returns same matrix with random values between 0.0 and 1.0
  **/
