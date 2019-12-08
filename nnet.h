@@ -93,6 +93,10 @@ void print_vector(gsl_vector *in);
  **/
 void print_matrix(gsl_matrix *in);
 
+double *init_zero(double input[], int length);
+
+double *init_random(double input[], int length);
+
 /**
  * Sigmoid activation function
  * Function which is plotted as 'S' shaped graph

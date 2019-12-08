@@ -11,8 +11,8 @@
 
 cann_double *init_model_double(int num_inputs, int num_hidden, int num_outputs){
     cann_double *nnet;
-    size_t size = sizeof(cann_double) + sizeof(double)*(num_hidden + num_outputs + num_hidden + num_outputs + (num_inputs+num_hidden)+(num_hidden+num_outputs));
-    nnet = malloc(size);
+    size_t size_nnet = sizeof(cann_double) + (sizeof(double)*(num_hidden + num_outputs + num_hidden + num_outputs + (num_inputs+num_hidden)+(num_hidden+num_outputs)));
+    nnet = (cann_double *) malloc(size_nnet);
     if (!nnet) return 0;
     
     double hiddenLayer[num_hidden];
@@ -24,12 +24,13 @@ cann_double *init_model_double(int num_inputs, int num_hidden, int num_outputs){
     nnet->num_inputs = num_inputs;
     nnet->num_hidden = num_hidden;
     nnet->num_outputs = num_outputs;
-    nnet->hidden = hiddenLayer;
-    nnet->output = outputLayer;
-    nnet->hiddenBias = hiddenLayerBias;
-    nnet->outBias = outputLayerBias;
-    nnet->hidden_weights = hiddenWeights;
-    nnet->output_weights = outputWeights;
+    nnet->hidden = init_zero(hiddenLayer, num_hidden);
+    nnet->output = init_zero(outputLayer, num_outputs);
+    nnet->hiddenBias = init_zero(hiddenLayerBias, num_hidden);
+    nnet->outBias = init_zero(outputLayerBias, num_outputs);
+    nnet->hidden_weights = init_random(hiddenWeights, (num_inputs+num_hidden));
+    nnet->output_weights = init_random(outputWeights, (num_hidden+num_outputs));
+    nnet->hidden[0] = 1.0;
     printf("Vector Hidden: \n");
     print_array(nnet->hidden, num_hidden);
     printf("Vector out\n");
@@ -42,7 +43,7 @@ cann_double *init_model_double(int num_inputs, int num_hidden, int num_outputs){
     printf("HIDDEN BIAS: \n");
     print_array(nnet->hiddenBias, num_hidden);
     printf("Final output bias: \n");
-    print_array(nnet->output_weights, num_outputs);
+    print_array(nnet->outBias, num_outputs);
     return nnet;
 }
 cann_double *model_train(cann_double *nnet, int num_inputs, int num_hidden, int num_outputs, int num_training, int numhidden_layers, int epochs, int trainingOrder[], double training_in[][num_inputs], double training_out[][num_outputs]){
@@ -338,7 +339,7 @@ void print_mat(double input[], int lengthX, int lengthY){
     }
     printf("\n");
 }
-/*
+
 void print_vector(gsl_vector *in){
     printf("\n");
     for (int y = 0; y < in->size; y++){
@@ -377,7 +378,21 @@ void matrixInit_random(gsl_matrix *my_mat){
     }
     return;
 }
-*/
+
+double *init_zero(double input[], int length){
+    for (int x=0; x < length; x++){
+        input[x] = (double) 0;
+    }
+    return input;
+}
+
+double *init_random(double input[], int length){
+    for (int x=0; x < length; x++){
+        input[x] = init_weights();
+    }
+    return input;
+}
+
 void swap(int *a, int *b){
     int temp = *a;
     *a = *b;
