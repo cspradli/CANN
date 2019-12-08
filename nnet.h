@@ -97,3 +97,9 @@ void shuffle(int arr[], int n);
  * Frees all parts of a model
  **/
 void free_nnet(cann_double *in);
+
+
+/**
+ * Print all
+ **/
+void print_all(cann_double *in);

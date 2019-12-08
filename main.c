@@ -1,10 +1,18 @@
 #include <stdio.h>
 #include "nnet.h"
-
-
+#include <stdlib.h>
+#include <string.h>
 int main(int argc, char const *argv[])
 {
- 
+    if (argc < 2){
+        printf("Need more args\n");
+    }
+    if (strcmp(argv[1], "yes") == 0){
+        printf("SENDING JOB TO SERVER\n");
+        if(system("ssh cspradli@montreat.cs.unca.edu './my-nnet no'")) printf("success\n");
+    } else {
+
+    //printf("check : %d", check);
     int numTrainingSets = 4;
     int numInputs = 2;
     int numOutputs = 1;
@@ -15,21 +23,11 @@ int main(int argc, char const *argv[])
 
     cann_double *nnet;
     nnet = init_model_double(numInputs, numHidden, numOutputs);
-    printf("\n\n###########FROM MAIN################\n\nVector Hidden: \n");
-    print_array(nnet->hidden, 2);
-    printf("Vector out\n");
-    print_array(nnet->output, numOutputs);
-    printf("Weights:\n");
-    printf("HIDDEN: \n");
-    print_mat(nnet->hidden_weights, numInputs, numHidden);
-    printf("OUTPUT: \n");
-    print_mat(nnet->output_weights, numHidden, numOutputs);
-    printf("HIDDEN BIAS: \n");
-    print_array(nnet->hiddenBias, numHidden);
-    printf("Final output bias: \n");
-    print_array(nnet->output_weights, numOutputs);
+    print_all(nnet);
     nnet = model_train(nnet, numInputs, numHidden, numOutputs, numTrainingSets, 1, 1000, trainingorder, training_inputs, training_outputs);
+    print_all(nnet);
     free_nnet(nnet);
+    }
     return 0;
-
+    
 }
