@@ -38,7 +38,7 @@ cann_double *init_model_double(int num_inputs, int num_hidden, int num_outputs){
 
 }
 cann_double *model_train(cann_double *nnet, int num_inputs, int num_hidden, int num_outputs, int num_training, int numhidden_layers, int epochs, int training_order[], double training_in[], double training_out[]){
-    /*double *hiddenLayer;
+    double *hiddenLayer;
     double *outputLayer;
     double *hiddenLayerBias;
     double *outputLayerBias;
@@ -49,7 +49,7 @@ cann_double *model_train(cann_double *nnet, int num_inputs, int num_hidden, int 
     hiddenLayerBias = nnet->hiddenBias;
     outputLayerBias = nnet->outBias;
     hiddenWeights = nnet->hidden_weights;
-    outputWeights = nnet->output_weights;*/
+    outputWeights = nnet->output_weights;
     //int n = 0;
     //int x = 0;
     //int j = 0;
@@ -91,16 +91,24 @@ cann_double *model_train(cann_double *nnet, int num_inputs, int num_hidden, int 
             int i = training_order[x];
             //Compute hidden layer activation
             for (int j = 0; j < num_hidden; j++){
-                double activation = nnet->hiddenBias[j];
+                double activation = hiddenLayerBias[j];// nnet->hiddenBias[j];
                 for (int k = 0; k < num_inputs; k++){
-                    activation = activation + training_in[i*num_training +k]* nnet->hidden_weights[k*num_hidden+j];
+                    activation = activation + training_in[i*num_training +k]* nnet->hidden_weights[k*num_hidden+j]; //nnet->hidden_weights[k*num_hidden+j];
                 }
-                nnet->hidden[j] = sigmoid(activation);
+                hiddenLayer[j] = sigmoid(activation);
             }
             //print_array(hiddenLayer, num_hidden);
             //Comput output layer activation
+
+            
         }
     }
+    nnet->hidden = hiddenLayer;
+    nnet->hidden_weights = hiddenWeights;
+    nnet->hiddenBias = hiddenLayerBias;
+    nnet->output = outputLayer;
+    nnet->output_weights = outputWeights;
+    nnet->outBias = outputLayerBias;
     return nnet;
 
 }
@@ -188,18 +196,18 @@ void shuffle(int arr[], int n){
 }
 
 void print_all(cann_double *nnet){
-    printf("\n\n###########MODEL SUMMARY################\n\n");
+    printf("\n\n########## MODEL SUMMARY ##########\n");
     printf("NUM INPUT: %d        NUM HIDDEN: %d\nNUM OUTPUT: %d", nnet->num_inputs, nnet->num_hidden, nnet->num_outputs);
-    printf("##############VECTORS###############\nHidden:\n");
+    printf("----------VECTORS----------\nHidden:\n");
     print_array(nnet->hidden, 2);
     printf("Output\n");
     print_array(nnet->output, nnet->num_outputs);
-    printf("######################Weights##################:\n");
+    printf("----------WEIGHTS----------:\n");
     printf("HIDDEN: \n");
     print_mat(nnet->hidden_weights, nnet->num_inputs, nnet->num_hidden);
     printf("OUTPUT: \n");
     print_mat(nnet->output_weights, nnet->num_hidden, nnet->num_outputs);
-    printf("###################BIASES############################\n");
+    printf("----------BIASES-----------\n");
     printf("HIDDEN BIAS: \n");
     print_array(nnet->hiddenBias, nnet->num_hidden);
     printf("FINAL OUTPUT BIAS: \n");
