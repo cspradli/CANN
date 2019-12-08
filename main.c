@@ -4,13 +4,14 @@
 #include <string.h>
 int main(int argc, char const *argv[])
 {
-    if (argc < 2){
+    /*if (argc < 2){
         printf("Need more args\n");
     }
     if (strcmp(argv[1], "yes") == 0){
         printf("SENDING JOB TO SERVER\n");
+        printf("get command to ssh\n");
         if(system("ssh cspradli@montreat.cs.unca.edu './my-nnet no'")) printf("success\n");
-    } else {
+    } else {*/
 
     //printf("check : %d", check);
     int numTrainingSets = 4;
@@ -27,7 +28,7 @@ int main(int argc, char const *argv[])
     nnet = model_train(nnet, numInputs, numHidden, numOutputs, numTrainingSets, 1, 1000, trainingorder, training_inputs, training_outputs);
     print_all(nnet);
     free_nnet(nnet);
-    }
+    //}
     return 0;
     
 }
