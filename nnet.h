@@ -1,4 +1,8 @@
-
+/**
+ * NNET header file
+ * Date: 12/08/19
+ * Author: Caleb Spradlin
+ **/
 
 
 typedef struct cann_double{
@@ -16,23 +20,20 @@ typedef struct cann_double{
     double *output_weights;
 } cann_double;
 
-void free_nnet(cann_double *in);
-
+/**
+ * Initializes a neural net
+ **/
 cann_double *init_model_double(int num_inputs, int num_hidden, int num_outputs);
 
-cann_double *model_train(cann_double *nnet, int num_inputs, int num_hidden, int num_outputs, int num_training, int numhidden_layers, int epochs, int trainingOrder[], double training_in[], double training_out[]);
-
-
-void print_array(double input[], int length);
-
-void print_mat(double input[], int lengthX, int lengthY);
 /**
- * Takes a vector and returns same matrix with random values between 0.0 and 1.0
+ * Performs the training routine 
  **/
+cann_double *model_train(cann_double *nnet, int num_inputs, int num_hidden, int num_outputs, int num_training, int numhidden_layers, int epochs, int trainingOrder[], double training_in[], double training_out[]);
 
 /**
  * Takes a vector and returns same vector with random values between 0.0 and 1.0
  **/
+double *init_random(double input[], int length);
 
 /**
  * Init all weights and biases between 0.0 and 1.0
@@ -40,26 +41,19 @@ void print_mat(double input[], int lengthX, int lengthY);
 double init_weights();
 
 /**
- * Initializes a vector to size 'size'
- * Returns a gsl_vector with all values set to zero
- **/
-
-/**
- * Inits a matric to size(sizeX, sizeY)
- * Returns a matrix of size with all values set to zero
- **/
-
-/**
  * Prints a vector in formatted style
  **/
+void print_array(double input[], int length);
 
 /**
  * Prints a matrix in formatted style
  **/
+void print_mat(double input[], int lengthX, int lengthY);
 
+/**
+ * Takes an array or matrix and returns same one with all zeros
+ **/
 double *init_zero(double input[], int length);
-
-double *init_random(double input[], int length);
 
 /**
  * Sigmoid activation function
@@ -89,7 +83,17 @@ double tanh_(double x);
  **/
 double d_tanh(double x);
 
+/**
+ * Simple swap function to swap pointer
+ */
 void swap(int *a, int *b);
 
+/**
+ * Shuffles the array as input
+ **/
 void shuffle(int arr[], int n);
 
+/**
+ * Frees all parts of a model
+ **/
+void free_nnet(cann_double *in);

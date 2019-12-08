@@ -11,17 +11,10 @@
 
 cann_double *init_model_double(int num_inputs, int num_hidden, int num_outputs){
 
-    //size_t size_nnet = (sizeof(double)*(num_hidden + num_outputs + num_hidden + num_outputs + (num_inputs+num_hidden)+(num_hidden+num_outputs)));
+
     cann_double* nnet = (cann_double* )malloc(sizeof(cann_double));
-    if (!nnet) exit(0);
-    /*
-    double hiddenLayer[num_hidden];
-    double outputLayer[num_outputs];
-    double hiddenLayerBias[num_hidden];
-    double outputLayerBias[num_outputs];
-    double hiddenWeights[num_inputs+num_hidden];
-    double outputWeights[num_hidden+num_outputs];
-    */
+    if (!nnet) return 0;
+
     nnet->num_inputs = num_inputs;
     nnet->num_hidden = num_hidden;
     nnet->num_inputs = num_inputs;
@@ -65,18 +58,18 @@ cann_double *init_model_double(int num_inputs, int num_hidden, int num_outputs){
     return nnet;
 }
 cann_double *model_train(cann_double *nnet, int num_inputs, int num_hidden, int num_outputs, int num_training, int numhidden_layers, int epochs, int training_order[], double training_in[], double training_out[]){
-    //double *hiddenLayer;
-    //double *outputLayer;
-    //double *hiddenLayerBias;
-    //double *outputLayerBias;
-    //double *hiddenWeights;
-    //double *outputWeights;
-    //hiddenLayer = nnet->hidden;
-    //outputLayer = nnet->output;
-    //hiddenLayerBias = nnet->hiddenBias;
-    //outputLayerBias = nnet->outBias;
-    //hiddenWeights = nnet->hidden_weights;
-    //outputWeights = nnet->output_weights;
+    /*double *hiddenLayer;
+    double *outputLayer;
+    double *hiddenLayerBias;
+    double *outputLayerBias;
+    double *hiddenWeights;
+    double *outputWeights;
+    hiddenLayer = nnet->hidden;
+    outputLayer = nnet->output;
+    hiddenLayerBias = nnet->hiddenBias;
+    outputLayerBias = nnet->outBias;
+    hiddenWeights = nnet->hidden_weights;
+    outputWeights = nnet->output_weights;*/
     printf("[");
     for (int i = 0; i < num_training; i++){
         printf("%d, ", training_order[i]);
