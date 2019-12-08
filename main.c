@@ -25,7 +25,7 @@ int main(int argc, char const *argv[])
     cann_double *nnet;
     nnet = init_model_double(numInputs, numHidden, numOutputs);
     print_all(nnet);
-    nnet = model_train(nnet, numInputs, numHidden, numOutputs, numTrainingSets, 1, 1000, trainingorder, training_inputs, training_outputs);
+    nnet = model_train(nnet, numInputs, numHidden, numOutputs, numTrainingSets, 0.1, 10000, trainingorder, training_inputs, training_outputs);
     print_all(nnet);
     free_nnet(nnet);
     //}

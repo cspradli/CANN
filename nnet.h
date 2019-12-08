@@ -28,7 +28,7 @@ cann_double *init_model_double(int num_inputs, int num_hidden, int num_outputs);
 /**
  * Performs the training routine 
  **/
-cann_double *model_train(cann_double *nnet, int num_inputs, int num_hidden, int num_outputs, int num_training, int numhidden_layers, int epochs, int trainingOrder[], double training_in[], double training_out[]);
+cann_double *model_train(cann_double *nnet, int num_inputs, int num_hidden, int num_outputs, int num_training, double lr, int epochs, int trainingOrder[], double training_in[], double training_out[]);
 
 /**
  * Takes a vector and returns same vector with random values between 0.0 and 1.0
