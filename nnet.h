@@ -42,8 +42,11 @@ typedef struct cann_double{
     double *output_weights;
 } cann_double;
 
+void free_nnet(cann_double *in);
+
 cann_double *init_model_double(int num_inputs, int num_hidden, int num_outputs);
 
+cann_double *model_train(cann_double *nnet, int num_inputs, int num_hidden, int num_outputs, int num_training, int numhidden_layers, int epochs, int trainingOrder[], double training_in[], double training_out[]);
 
 cann *init_model(int num_inputs, int num_hidden, int num_outputs, int num_training, int numhidden_layers, int epochs, int trainingOrder[], double training_in[][num_inputs], double training_out[][num_outputs]);
 

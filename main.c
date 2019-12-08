@@ -27,10 +27,10 @@ int main(int argc, char const *argv[])
     //int numTrainingSets = 4;
     int numInputs = 2;
     int numOutputs = 1;
-    int numHidden = 2;
-    //int trainingorder[] = {0,1,2,3};
-    //double training_outputs[4][1] = { {0.0f},{1.0f},{1.0f},{0.0f} };
-    //double training_inputs[4][2] = { {0.0f,0.0f},{1.0f,0.0f},{0.0f,1.0f},{1.0f,1.0f} };
+    int numHidden = 2;/*
+    int trainingorder[] = {0,1,2,3};
+    double training_outputs[4] = { 0.0f,1.0f,1.0f,0.0f};
+    double training_inputs[8] = { 0.0f,0.0f,1.0f,0.0f,0.0f,1.0f,1.0f,1.0f };*/
     //cann *my_nnet;
     //my_nnet = init_model(numInputs, 2, numOutputs, numTrainingSets, 1, 100000, trainingorder, training_inputs, training_outputs);
     //my_nnet = train_model(my_nnet, 2, numInputs, numOutputs, numTrainingSets, 1000, trainingorder, training_inputs, training_outputs);
@@ -52,7 +52,8 @@ int main(int argc, char const *argv[])
     print_array(nnet->hiddenBias, numHidden);
     printf("Final output bias: \n");
     print_array(nnet->output_weights, numOutputs);
-    free(nnet);
+    //nnet = model_train(nnet, numInputs, numHidden, numOutputs, numTrainingSets, 1, 1000, trainingorder, training_inputs, training_outputs);
+    free_nnet(nnet);
     return 0;
 
 }
