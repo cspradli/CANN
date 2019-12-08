@@ -5,7 +5,7 @@
 
 CC = gcc
 CFLAGS = -O -Wall
-LFLAGS = -lm -lgsl -lgslcblas
+LFLAGS = -lm
 
 all: my-nnet
 

@@ -1,0 +1,278 @@
+cann *init_model(int num_inputs, int num_hidden, int num_outputs, int num_training, int num_hiddenlayers, int epochs, int training_order[], double training_in[][num_inputs], double training_out[][num_outputs]){
+    cann *nnet;
+    nnet = malloc(sizeof(cann));
+    gsl_vector *hidden;
+    gsl_vector *output;
+    gsl_vector *hiddenBias;
+    gsl_vector *outBias;
+    gsl_vector *deltaHidden;
+    gsl_vector *deltaOut;
+    gsl_matrix *hiddenWeights;
+    gsl_matrix *outputWeights;
+    hidden = init_vector(num_hidden);
+    output = init_vector(num_outputs);
+    hiddenBias = init_vector(num_hidden);
+    outBias = init_vector(num_outputs);
+    deltaHidden = init_vector(num_hidden);
+    deltaOut = init_vector(num_outputs);
+    hiddenWeights = init_matrix(num_inputs, num_hidden);
+    matrixInit_random(hiddenWeights);
+    outputWeights = init_matrix(num_hidden, num_outputs);
+    matrixInit_random(outputWeights);
+    double lr = 0.1f;
+    /*
+    for (int n = 0; n < epochs; n++){
+        shuffle(training_order, num_training);
+        for (int x = 0; x < num_training; x++){
+            int i = training_order[x];
+            //Compute hidden layer activation
+            for (int j = 0; j < num_hidden; j++){
+                double activation = gsl_vector_get(hiddenBias, j);
+                for (int k = 0; k < num_inputs; k++){
+                    activation += training_in[i][k]*gsl_matrix_get(hiddenWeights, k, j);
+                }
+                gsl_vector_set(hidden, j, sigmoid(activation));
+            }
+            //print_vector(hidden);
+            //Comput output layer activation
+            for (int j = 0; j < num_outputs; j++){
+                double activation = gsl_vector_get(outBias, j);
+                
+                for (int k = 0; k < num_hidden; k++){
+                    activation += (gsl_vector_get(hidden, k) * gsl_matrix_get(outputWeights, k, j));
+                }
+                gsl_vector_set(output, j, sigmoid(activation));
+                
+            }
+            
+            //printf("Input %f %f Output: %f\n", training_in[i][0], training_in[i][1], gsl_vector_get(output, i));
+            //Compute change in output weights
+            for (int j = 0; j < num_outputs; j++){
+                double dError = (training_out[i][j]-gsl_vector_get(output, j));
+                gsl_vector_set(deltaOut, j, (dError * d_sigmoid(gsl_vector_get(output, j))));
+            }
+            
+            //Compute change in hidden weights
+            for (int j = 0; j < num_hidden; j++){
+                double dError = 0.0f;
+                for (int k = 0; k < num_outputs; k++){
+                    dError += (gsl_vector_get(deltaOut, k) * gsl_matrix_get(outputWeights, j, k));
+                }
+                gsl_vector_set(deltaHidden, j, (dError * d_sigmoid(gsl_vector_get(hidden, j))));
+            }
+            
+            for (int j = 0; j < num_outputs; j++){
+                double tempa = gsl_vector_get(outBias, j);
+                gsl_vector_set(outBias, j, (tempa + (gsl_vector_get(deltaOut, j) * lr)));
+                for (int k =0; k < num_hidden; k++){
+                    double tempb = gsl_matrix_get(outputWeights, k, j);
+                    gsl_matrix_set(outputWeights, k, j, (tempb + (gsl_vector_get(hidden, k)*gsl_vector_get(deltaOut, j)*lr)));
+                }
+            }
+            for (int j = 0; j < num_hidden; j++){
+                double tempa = gsl_vector_get(hiddenBias, j);
+                gsl_vector_set(hiddenBias, j, (tempa + (gsl_vector_get(deltaHidden, j) * lr)));
+                for (int k =0; k < num_hidden; k++){
+                    double tempb = gsl_matrix_get(hiddenWeights, k, j);
+                    gsl_matrix_set(hiddenWeights, k, j, (tempb + (training_in[i][k]*gsl_vector_get(deltaHidden, j)*lr)));
+                }
+            }
+            
+        }
+    }*/
+    nnet->deltaHidden = deltaHidden;
+    nnet->deltaOut = deltaOut;
+    nnet->hidden = hidden;
+    nnet->hiddenBias = hiddenBias;
+    nnet->hiddenWeights = hiddenWeights;
+    nnet->lr = lr;
+    nnet->num_hidden = num_hidden;
+    nnet->num_inputs = num_inputs;
+    nnet->num_outputs = num_outputs;
+    nnet->outBias = outBias;
+    nnet->outputWeights = outputWeights;
+    nnet->total_perceptrons = (num_hidden + num_inputs + num_outputs);
+    nnet->total_weights = num_hidden;
+    printf("Vector Hidden: \n");
+    print_vector(hidden);
+    printf("Vector out\n");
+    print_vector(output);
+    printf("Weights:\n");
+    printf("HIDDEN: \n");
+    print_matrix(hiddenWeights);
+    printf("OUTPUT: \n");
+    print_matrix(outputWeights);
+    printf("HIDDEN BIAS: \n");
+    print_vector(hiddenBias);
+    printf("Final output bias: \n");
+    print_vector(outBias);
+    return nnet;
+}
+
+cann *train_model(cann *input_model, int num_hidden, int num_inputs, int num_outputs, int num_training, int epochs, int training_order[], double training_in[][num_inputs], double training_out[][num_outputs]){
+    gsl_vector *hidden = input_model->hidden;
+    gsl_vector *output = input_model->output;
+    gsl_vector *hiddenBias = input_model->hiddenBias;
+    gsl_vector *outBias = input_model->outBias;
+    gsl_vector *deltaHidden = input_model->deltaHidden;
+    gsl_vector *deltaOut = input_model->deltaOut;
+    gsl_matrix *hiddenWeights = input_model->hiddenWeights;
+    gsl_matrix *outputWeights = input_model->outputWeights;
+    //int num_hidden = input_model->num_hidden;
+    printf("hello 1\n");
+    int lr = input_model->lr;
+        for (int n = 0; n < epochs; n++){
+        shuffle(training_order, num_training);
+        for (int x = 0; x < num_training; x++){
+            int i = training_order[x];
+            //Compute hidden layer activation
+            for (int j = 0; j < num_hidden; j++){
+                double activation = gsl_vector_get(hiddenBias, j);
+                for (int k = 0; k < num_inputs; k++){
+                    activation += training_in[i][k]*gsl_matrix_get(hiddenWeights, k, j);
+                }
+                gsl_vector_set(hidden, j, sigmoid(activation));
+            }
+            //print_vector(hidden);
+            printf("hello 2\n");
+            //Comput output layer activation
+            for (int j = 0; j < num_outputs; j++){
+                double activation = gsl_vector_get(outBias, j);
+                printf("hello %d\n", j);
+                for (int k = 0; k < num_hidden; k++){
+                    printf("hello 11%d\n", k);
+                    activation += (gsl_vector_get(hidden, k) * gsl_matrix_get(outputWeights, k, j));
+                }
+                gsl_vector_set(output, j, sigmoid(activation));
+                
+            }
+            printf("hello 3\n");
+            //printf("Input %f %f Output: %f\n", training_in[i][0], training_in[i][1], gsl_vector_get(output, i));
+            //Compute change in output weights
+            for (int j = 0; j < num_outputs; j++){
+                double dError = (training_out[i][j]-gsl_vector_get(output, j));
+                gsl_vector_set(deltaOut, j, (dError * d_sigmoid(gsl_vector_get(output, j))));
+            }
+            printf("hello 4\n");
+            //Compute change in hidden weights
+            for (int j = 0; j < num_hidden; j++){
+                double dError = 0.0f;
+                for (int k = 0; k < num_outputs; k++){
+                    dError += (gsl_vector_get(deltaOut, k) * gsl_matrix_get(outputWeights, j, k));
+                }
+                gsl_vector_set(deltaHidden, j, (dError * d_sigmoid(gsl_vector_get(hidden, j))));
+            }
+            
+            for (int j = 0; j < num_outputs; j++){
+                double tempa = gsl_vector_get(outBias, j);
+                gsl_vector_set(outBias, j, (tempa + (gsl_vector_get(deltaOut, j) * lr)));
+                for (int k =0; k < num_hidden; k++){
+                    double tempb = gsl_matrix_get(outputWeights, k, j);
+                    gsl_matrix_set(outputWeights, k, j, (tempb + (gsl_vector_get(hidden, k)*gsl_vector_get(deltaOut, j)*lr)));
+                }
+            }
+            for (int j = 0; j < num_hidden; j++){
+                double tempa = gsl_vector_get(hiddenBias, j);
+                gsl_vector_set(hiddenBias, j, (tempa + (gsl_vector_get(deltaHidden, j) * lr)));
+                for (int k =0; k < num_hidden; k++){
+                    double tempb = gsl_matrix_get(hiddenWeights, k, j);
+                    gsl_matrix_set(hiddenWeights, k, j, (tempb + (training_in[i][k]*gsl_vector_get(deltaHidden, j)*lr)));
+                }
+            }
+            
+        }
+    }
+
+    printf("Vector Hidden: \n");
+    print_vector(hidden);
+    printf("Vector out\n");
+    print_vector(output);
+    printf("Weights:\n");
+    printf("HIDDEN: \n");
+    print_matrix(hiddenWeights);
+    printf("OUTPUT: \n");
+    print_matrix(outputWeights);
+    printf("HIDDEN BIAS: \n");
+    print_vector(hiddenBias);
+    printf("Final output bias: \n");
+    print_vector(outBias);
+    return input_model;
+}
+gsl_vector* init_vector(int size){
+    gsl_vector *vect = gsl_vector_alloc(size);
+    gsl_vector_set_all(vect, 0.0);
+    return vect;
+}
+
+gsl_matrix* init_matrix(int sizeX, int sizeY){
+    gsl_matrix *mat = gsl_matrix_alloc(sizeX, sizeY);
+    gsl_matrix_set_all(mat, 0.0);
+    return mat;
+}
+
+void print_vector(gsl_vector *in){
+    printf("\n");
+    for (int y = 0; y < in->size; y++){
+        double ret = gsl_vector_get(in, y);
+        printf("|%f|\n", ret);
+    }
+    printf("\n");
+}
+
+void print_matrix(gsl_matrix *in){
+    printf("\n");
+    for (int a = 0; a < in->size1; a++){
+        printf("|");
+        for (int b = 0; b < in->size2; b++){
+            double ret = gsl_matrix_get(in, a, b);
+            printf(" %f ", ret);
+        }
+        printf("|\n");
+    }
+    printf("\n");
+}
+
+void vectorInit_random(gsl_vector *my_vect){
+    for (int i = 0; i < my_vect->size; i++){
+        gsl_vector_set(my_vect, i, init_weights());   
+    }
+    //gsl_vector_set_all(my_vect, init_weights());
+    return;
+}
+
+void matrixInit_random(gsl_matrix *my_mat){
+    for (int i = 0; i < my_mat->size1; i++){
+        for (int j = 0; j < my_mat->size2; j++){
+            gsl_matrix_set(my_mat, i, j, init_weights());
+        }
+    }
+    return;
+}
+
+   /*double tw = 2.0;
+    printf("sigmoid %f\n", sigmoid(tw));
+    
+    gsl_matrix *my_mat2;
+    gsl_matrix *my_mat;
+    my_mat = init_matrix(5,5);
+    print_matrix(my_mat);
+    my_mat2 = init_matrix(5, 1);
+    matrixInit_random(my_mat2);
+    print_matrix(my_mat2);
+    printf("%f\n", gsl_matrix_get(my_mat2, 1, 0));
+    matrixInit_random(my_mat);
+    print_matrix(my_mat);
+    gsl_matrix_transpose(my_mat);
+    printf("Transpose Vector\n");
+    print_matrix(my_mat);
+    gsl_matrix_mul_elements(my_mat2, my_mat);
+    
+    gsl_matrix_free(my_mat2);
+    gsl_matrix_free(my_mat);*/
+
+        //cann *my_nnet;
+    //my_nnet = init_model(numInputs, 2, numOutputs, numTrainingSets, 1, 100000, trainingorder, training_inputs, training_outputs);
+    //my_nnet = train_model(my_nnet, 2, numInputs, numOutputs, numTrainingSets, 1000, trainingorder, training_inputs, training_outputs);
+    //printf("From main");
+    //print_vector(my_nnet->hidden);
+    //free(my_nnet);

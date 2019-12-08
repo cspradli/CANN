@@ -1,31 +1,5 @@
-#include <gsl/gsl_matrix.h>
-#include <gsl/gsl_linalg.h>
-#include <gsl/gsl_blas.h>
-#include <gsl/gsl_vector.h>
 
-typedef struct cann{
-    int num_inputs;
-    int num_hidden;
-    int num_outputs;
-    int total_weights;
-    int total_perceptrons;
-    double lr;
-    gsl_vector *hidden;
-    gsl_vector *output;
-    gsl_vector *hiddenBias;
-    gsl_vector *outBias;
-    gsl_vector *deltaHidden;
-    gsl_vector *deltaOut;
-    gsl_matrix *hiddenWeights;
-    gsl_matrix *outputWeights;
-} cann;
 
-typedef struct twoD
-{
-    double **array;
-    size_t rows;
-    size_t cols;
-}twoD;
 
 typedef struct cann_double{
     int num_inputs;
@@ -48,13 +22,6 @@ cann_double *init_model_double(int num_inputs, int num_hidden, int num_outputs);
 
 cann_double *model_train(cann_double *nnet, int num_inputs, int num_hidden, int num_outputs, int num_training, int numhidden_layers, int epochs, int trainingOrder[], double training_in[], double training_out[]);
 
-cann *init_model(int num_inputs, int num_hidden, int num_outputs, int num_training, int numhidden_layers, int epochs, int trainingOrder[], double training_in[][num_inputs], double training_out[][num_outputs]);
-
-cann *train_model(cann *input_model, int num_hidden, int num_inputs, int num_outputs, int num_training, int epochs, int training_order[], double training_in[][num_inputs], double training_out[][num_outputs]);
-
-void makeTwoD(struct twoD *p);
-
-void freeTwoD(struct twoD *p);
 
 void print_array(double input[], int length);
 
@@ -62,12 +29,10 @@ void print_mat(double input[], int lengthX, int lengthY);
 /**
  * Takes a vector and returns same matrix with random values between 0.0 and 1.0
  **/
-void vectorInit_random(gsl_vector *my_vect);
 
 /**
  * Takes a vector and returns same vector with random values between 0.0 and 1.0
  **/
-void matrixInit_random(gsl_matrix *my_mat);
 
 /**
  * Init all weights and biases between 0.0 and 1.0
@@ -78,23 +43,19 @@ double init_weights();
  * Initializes a vector to size 'size'
  * Returns a gsl_vector with all values set to zero
  **/
-gsl_vector* init_vector(int size);
 
 /**
  * Inits a matric to size(sizeX, sizeY)
  * Returns a matrix of size with all values set to zero
  **/
-gsl_matrix* init_matrix(int sizeX, int sizeY);
 
 /**
  * Prints a vector in formatted style
  **/
-void print_vector(gsl_vector *in);
 
 /**
  * Prints a matrix in formatted style
  **/
-void print_matrix(gsl_matrix *in);
 
 double *init_zero(double input[], int length);
 
