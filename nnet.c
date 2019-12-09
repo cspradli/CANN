@@ -249,7 +249,7 @@ double sigmoid(double x){
     }
 
 double d_sigmoid(double x){
-    return x * (1.0f - x);
+    return sigmoid(x) * (1.0f - sigmoid(x));
 }
 
 double tanh_(double x){
