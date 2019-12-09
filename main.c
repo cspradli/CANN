@@ -4,7 +4,7 @@
 #include <string.h>
 int main(int argc, char const *argv[])
 {
-    if (argc < 2){
+    /*if (argc < 2){
         printf("USAGE: './my-nnet (send to server)y/n (sftp)y/n'\n");
     }
     if (strcmp(argv[1], "y") == 0){
@@ -14,7 +14,7 @@ int main(int argc, char const *argv[])
         if(system("ssh cspradli@montreat.cs.unca.edu 'wget http://arden.cs.unca.edu/~cspradli/my-nnet'"));
         if(system("ssh cspradli@montreat.cs.unca.edu './my-nnet n'")) printf("success\n");
         }
-    } else {
+    } else {*/
 
     //printf("check : %d", check);
     int numTrainingSets = 4;
@@ -41,7 +41,7 @@ int main(int argc, char const *argv[])
     forward_prop(nnet, test_set);
     print_array(predict(nnet, test_set), nnet->num_outputs);
     free_nnet(nnet);
-    }
+    //}
     return 0;
     
 }
