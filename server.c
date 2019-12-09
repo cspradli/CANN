@@ -1,4 +1,7 @@
-    
+#include <stdio.h>
+#include <stdlib.h>
+
+
 void server_job(int argc, char **argv){
     if (argc < 2){
         printf("USAGE: './my-nnet (send to server)y/n'\n");
