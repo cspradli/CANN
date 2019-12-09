@@ -37,6 +37,8 @@ cann_double *init_model_double(int num_inputs, int num_hidden, int num_outputs){
     return nnet;
 
 }
+
+
 cann_double *model_train(cann_double *nnet, int num_inputs, int num_hidden, int num_outputs, int num_training, double lr, int epochs, int training_order[], double training_in[], double training_out[]){
     double *hiddenLayer;
     double *outputLayer;
@@ -146,6 +148,72 @@ cann_double *model_train(cann_double *nnet, int num_inputs, int num_hidden, int 
 
 }
 
+cann_double *train(cann_double *nnet, int num_inputs, int num_hidden, int num_outputs, int num_training, double lr, int epochs, int trainingOrder[], double training_in[], double training_out[]){
+    for (int i=0; i<epochs; i++){
+        shuffle(trainingOrder, num_training);
+        double err = 0.0f;
+        for(int j =0; j<num_training;j++){
+            forward_prop(nnet, training_in);
+            backprop(nnet, training_in, training_out, lr);
+            err += toterror(training_out, nnet->output, nnet->num_outputs);
+        }
+        printf("error %.12f || learning rate %f\n", (err/num_training), lr);
+        //lr *= 0.99;
+    }
+    return nnet;
+}
+
+double *predict(cann_double *nnet, double *in){
+    forward_prop(nnet, in);
+    return nnet->output;
+}
+
+void forward_prop(cann_double *nnet, double *in){
+    for (int j = 0; j < nnet->num_hidden; j++){
+        
+        double activation = nnet->hiddenBias[j];
+        
+        for (int k = 0; k < nnet->num_inputs; k++){
+            activation += in[k]*nnet->hidden_weights[j*nnet->num_inputs+k];       //nnet->hidden_weights[k*num_hidden+j];
+        }
+        
+        nnet->hidden[j] = sigmoid(activation);
+    }
+
+    for (int j=0; j<nnet->num_outputs;j++){                   //J = num of output nodes
+        double activation = nnet->outBias[j];
+
+        for(int k=0; k<nnet->num_hidden;k++){                 // k = num of hidden nodes
+            activation += nnet->hidden[k]*nnet->output_weights[j*nnet->num_outputs+k];
+        }
+
+        nnet->output[j] = sigmoid(activation);
+    }
+
+    //print_array(nnet->output, nnet->num_outputs);
+
+}
+
+void backprop(cann_double *nnet, double *training_input, double *training_out, double rate){
+            /**
+             * BAKCPROP
+             * Next steps involve:
+             * Calculating incremental changre in network weights
+             * Moves network towards minimizing the error of the output
+             * Starts at the node and works itself backward
+             **/
+    for (int i=0; i < nnet->num_hidden; i++){
+        double activation = 0.0f;
+        for (int j=0; j<nnet->num_outputs;j++){
+            double x = partial_dError(nnet->output[j], training_out[j]);
+            double y = d_sigmoid(nnet->output[j]);
+            activation += x * y * nnet->output_weights[j*nnet->num_hidden+i];
+            nnet->output_weights[j * nnet->num_inputs + j] -= rate  * activation * d_sigmoid(nnet->hidden[i])*training_input[j];
+        }
+    }
+}
+
+
 
 /* ************** HELPER FUNCTIONS ***************** */
 void free_nnet(cann_double *in){
@@ -158,12 +226,30 @@ void free_nnet(cann_double *in){
     free(in);
 }
 
+double partial_dError(double x, double y){
+    return x-y;
+}
+
+
+
+double err(double x, double y){
+    return 0.5f * (x-y) * (x-y);
+}
+
+double toterror(double* tg, double* o, int size){
+    double sum = 0.0f;
+    for(int i=0; i<size;i++){
+        sum += err(tg[i], o[i]);
+    }
+    return sum;
+}
+
 double sigmoid(double x){
     return 1 / (1 + exp(-x));
     }
 
 double d_sigmoid(double x){
-    return x * (1 - x);
+    return x * (1.0f - x);
 }
 
 double tanh_(double x){
@@ -228,7 +314,7 @@ void shuffle(int arr[], int n){
 
 void print_all(cann_double *nnet){
     printf("\n\n########## MODEL SUMMARY ##########\n");
-    printf("NUM INPUT: %d        NUM HIDDEN: %d\nNUM OUTPUT: %d", nnet->num_inputs, nnet->num_hidden, nnet->num_outputs);
+    printf("NUM INPUT: %d        NUM HIDDEN: %d\nNUM OUTPUT: %d\n", nnet->num_inputs, nnet->num_hidden, nnet->num_outputs);
     printf("----------VECTORS----------\nHidden:\n");
     print_array(nnet->hidden, 2);
     printf("Output\n");

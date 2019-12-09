@@ -25,8 +25,18 @@ int main(int argc, char const *argv[])
     cann_double *nnet;
     nnet = init_model_double(numInputs, numHidden, numOutputs);
     print_all(nnet);
-    nnet = model_train(nnet, numInputs, numHidden, numOutputs, numTrainingSets, 0.1, 10000, trainingorder, training_inputs, training_outputs);
+    //nnet = model_train(nnet, numInputs, numHidden, numOutputs, numTrainingSets, 0.1, 10000, trainingorder, training_inputs, training_outputs);
     print_all(nnet);
+
+    printf("Trying prediction\n");
+    //double test_set[2] = { 0.0f, 0.0f };
+    //forward_prop(nnet, test_set);
+    //backprop(nnet, training_inputs, training_outputs, 0.1);
+    nnet = train(nnet, numInputs, numHidden, numOutputs, numTrainingSets, 0.3, 10000, trainingorder, training_inputs, training_outputs);
+    print_all(nnet);
+    double test_set[2] = { 1.0f, 1.0f };
+    forward_prop(nnet, test_set);
+    print_array(predict(nnet, test_set), nnet->num_outputs);
     free_nnet(nnet);
     //}
     return 0;

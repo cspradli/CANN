@@ -103,3 +103,17 @@ void free_nnet(cann_double *in);
  * Print all
  **/
 void print_all(cann_double *in);
+
+double toterror(double* tg, double* o, int size);
+
+double err(double a, double b);
+
+double *predict(cann_double *in, double* input);
+
+void forward_prop(cann_double *nnet, double *in);
+
+cann_double *train(cann_double *nnet, int num_inputs, int num_hidden, int num_outputs, int num_training, double lr, int epochs, int trainingOrder[], double training_in[], double training_out[]);
+
+void backprop(cann_double *nnet, double *training_input, double *training_out, double rate);
+
+double partial_dError(double x, double y);
