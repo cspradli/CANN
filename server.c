@@ -38,6 +38,8 @@ int parse_input(const char *input){
     strcat(output, "@");
     strcat(output, host);
     printf("OUTPUT %s\n", output);
+    fflush(stdin);
+    fflush(stdout);
     if (ret == 1){
         exec_wget(output, ret);
         return ret;
@@ -54,10 +56,12 @@ void exec_wget(char *input, int check){
     check = 0;
     strcat(ssh_wget, "ssh ");
     strcat(ssh_wget, input);
-    strcat(ssh_wget, " 'wget http://arden.cs.unca.edu/~cspradli/my-nnet'\0");
-    printf("SSH COMMAND 0: %s\n", ssh_wget);
-    if (!system(ssh_wget)){
-        printf("ERROR IN SSH\n");
+    strcat(ssh_wget, " 'wget http://arden.cs.unca.edu/~cspradli/my-nnet'");
+    printf("SSH COMMAND 0: %s\nHanding over control to sh\n", ssh_wget);
+    fflush(stdin);
+    fflush(stdout);
+    if (system(ssh_wget)){
+        printf("ERROR IN SSH WGET\n");
         check = 0;
     } else {
         check = 1;
@@ -72,10 +76,12 @@ void exec_job(char *input, int check){
     check = 0;
     strcat(ssh_run, "ssh ");
     strcat(ssh_run, input);
-    strcat(ssh_run, " './my-nnet n' > output.txt\0");
-    printf("SSH COMMAND 1: %s\n", ssh_run);
-    if (!system(ssh_run)){
-        printf("ERROR IN SSH\n");
+    strcat(ssh_run, " './my-nnet n' > output.txt");
+    printf("SSH COMMAND 1: %s\nHanding over control to sh\n", ssh_run);
+    fflush(stdin);
+    fflush(stdout);
+    if (system(ssh_run)){
+        printf("ERROR IN SSH RUN\n");
         check = 0;
     } else {
         check = 1;
