@@ -2,19 +2,16 @@
 #include "nnet.h"
 #include <stdlib.h>
 #include <string.h>
+#include "server.h"
 int main(int argc, char const *argv[])
 {
-    /*if (argc < 2){
-        printf("USAGE: './my-nnet (send to server)y/n (sftp)y/n'\n");
-    }
-    if (strcmp(argv[1], "y") == 0){
-        printf("SENDING JOB TO SERVER\n");
-        if (fork() == 0){ //spin off child to run server commands
-        printf("get command to ssh\n");
-        if(system("ssh cspradli@montreat.cs.unca.edu 'wget http://arden.cs.unca.edu/~cspradli/my-nnet'"));
-        if(system("ssh cspradli@montreat.cs.unca.edu './my-nnet n'")) printf("success\n");
-        }
-    } else {*/
+    if (argc == 3){
+        printf("Running with server\n");
+        get_input(argc, argv);
+    } else if (argc == 1) {
+
+    printf("Running locally\n");
+    
 
     //printf("check : %d", check);
     int numTrainingSets = 4;
@@ -41,7 +38,10 @@ int main(int argc, char const *argv[])
     forward_prop(nnet, test_set);
     print_array(predict(nnet, test_set), nnet->num_outputs);
     free_nnet(nnet);
-    //}
+    } else {
+        printf("Usage: ./my-nnet y/n username@host.edy \n (y/n for running on server)\n(username@host.edu to use as server to run on\n");
+    }
+    
     return 0;
     
 }
