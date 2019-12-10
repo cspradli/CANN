@@ -289,3 +289,159 @@ void backprop(cann_double *nnet, double *training_input, double *training_out, d
         }
     }
 }
+
+
+cann_double *model_fit_update(cann_double *nnet, int num_training, int num_input, int num_hidden, int num_output, double input[][num_input], double target[][num_output], int epoch, double lr){
+    int    i ,n, j, k, p, np, op, r_pattern[num_training];
+    
+    double s_hidden[num_training][num_hidden];
+    double s_out[num_training][num_output];
+    double d_out[num_output], s_do[num_hidden], d_hidden[num_hidden];
+    double dw_IH[num_input][num_hidden], dw_HO[num_hidden][num_output];
+
+    double hidden[((num_training)*(num_hidden))];
+    double output[((num_training)*(num_output))];
+    double w_IH[((num_input)*(num_hidden))];
+    double w_HO[((num_hidden)*(num_output))];
+    
+    double bias_dih[num_hidden], bias_who[num_output], bias_dho[num_output], bias_wih[num_hidden];
+
+    double err, eta = 0.5, alpha = 0.9;
+    
+    int hiddenX;
+    int outputX;
+    int w_ihX;
+    int w_hoX;
+    
+    hiddenX = (num_training);
+    outputX = (num_training);
+    w_ihX = (num_input);
+    w_hoX = (num_hidden);
+
+    // INITIALIZATION
+    for( j = 0 ; j < num_hidden ; j++ ) {    /* initialize w_IH and dw_IH */
+        for( i = 0 ; i < num_input ; i++ ) { 
+            double init = init_further();
+            bias_dih[j] = 0.0;
+            dw_IH[i][j] = 0.0 ;
+            w_IH[i + w_ihX * j] = init ;
+            bias_wih[j] = init;
+        }
+    }
+    for( k = 0 ; k < num_output ; k ++ ) {    /* initialize w_HO and dw_HO */
+        for( j = 0 ; j < num_hidden ; j++ ) {
+            double init = init_further();
+            
+            dw_HO[j][k] = 0.0 ;  
+            bias_dho[k] = 0.0;          
+            
+            w_HO[j + w_hoX * k] = init;
+            bias_who[k] = init;
+        }
+    }
+     
+    for( n = 0 ; n < epoch ; n++) { 
+           /* iterate weight updates */
+        for( p = 0 ; p < num_training ; p++ ) {    /* randomize order of training patterns */
+            r_pattern[p] = p ;
+        }
+
+        for( p = 0 ; p < num_training ; p++) {
+            np = p + rando() * ( num_training - p ) ;
+            op = r_pattern[p] ; r_pattern[p] = r_pattern[np] ; r_pattern[np] = op ;
+        }
+
+        err = 0.0 ;
+        for( np = 0 ; np < num_training ; np++ ) {    /* repeat for all the training patterns */
+            p = r_pattern[np];
+
+            for( j = 0 ; j < num_hidden ; j++ ) {    /* compute hidden unit activations */
+                //s_hidden[p][j] = w_IH[0+w_ihX*j] ;
+                s_hidden[p][j] = bias_wih[j];
+                for( i = 0 ; i < num_input ; i++ ) {
+                    s_hidden[p][j] += input[p][i] * w_IH[i+w_ihX*j] ;
+                }
+                hidden[p+hiddenX*j] = 1.0/(1.0 + exp(-s_hidden[p][j])) ;
+            }
+
+
+            for( k = 0 ; k < num_output ; k++ ) {
+                s_out[p][k] = bias_who[k];// w_HO[0+w_hoX*k] ;
+                for( j = 0 ; j < num_hidden ; j++ ) {
+                    s_out[p][k] += hidden[p+hiddenX*j] * w_HO[j+w_hoX*k] ;
+                }
+                output[p+outputX*k] = 1.0/(1.0 + exp(-s_out[p][k])) ;
+                err += 0.5 * (target[p][k] - output[p+outputX*k]) * (target[p][k] - output[p+outputX*k]) ; 
+
+                d_out[k] = (target[p][k] - output[p+outputX*k]) * output[p+outputX*k] * (1.0 - output[p+outputX*k]) ;
+            }
+
+
+            for( j = 0 ; j < num_hidden ; j++ ) {    /* 'back-propagate' errors to hidden layer */
+                s_do[j] = 0.0 ;
+                for( k =0 ; k < num_output ; k++ ) {
+                    s_do[j] += w_HO[j+w_hoX*k] * d_out[k] ;
+                }
+                d_hidden[j] = s_do[j] * hidden[p+hiddenX*j] * (1.0 - hidden[p+hiddenX*j]) ;
+            }
+
+
+            for( j = 0 ; j < num_hidden ; j++ ) {     /* update weights w_IH */
+                //dw_IH[0][j] = eta * d_hidden[j] + alpha * dw_IH[0][j] ;
+                bias_dih[j] = eta * d_hidden[j] + alpha * bias_dih[j];
+                //w_IH[0+w_ihX*j] += activation ;
+                bias_wih[j] += bias_dih[j];
+                for( i = 0 ; i < num_input ; i++ ) { 
+                    dw_IH[i][j] = eta * input[p][i] * d_hidden[j] + alpha * dw_IH[i][j];
+                    w_IH[i+w_ihX*j] += dw_IH[i][j] ;
+                }
+            }
+
+
+            for( k = 0 ; k < num_output ; k ++ ) {    /* update weights w_HO */
+                //dw_HO[0][k] = eta * d_out[k] + alpha * dw_HO[0][k] ;
+
+                bias_dho[k] = eta * d_out[k] + alpha * bias_dho[k];
+                //w_HO[0+w_hoX*k] += dw_HO[0][k] ;
+                bias_who[k] += bias_dho[k];
+                for( j = 0 ; j < num_hidden ; j++ ) {
+                    dw_HO[j][k] = eta * hidden[p+hiddenX*j] * d_out[k] + alpha * dw_HO[j][k] ;
+                    w_HO[j+w_hoX*k] += dw_HO[j][k] ;
+                }
+            }
+
+        }
+
+        if( n%100 == 0 ) printf("\nEpoch %-5d :   err = %f", n, err) ;
+        if( err < 0.0003 ){
+            printf("Caught early at err %f", err);
+            break;
+        } /* stop learning when 'near enough' */
+    }
+    
+    printf("\n\nNeural Net - EP %d\n\nPat\t", n) ;   /* print network outputs */
+    for( i = 0 ; i < num_input ; i++ ) {
+        printf("Input-4%d\t", i) ;
+    }
+    for( k = 0 ; k < num_output ; k++ ) {
+        printf("target%-4d\tnnet output%-4d\t", k, k) ;
+    }
+    for( p = 0 ; p < num_training ; p++ ) {        
+    printf("\n%d\t", p) ;
+        for( i = 0 ; i < num_input ; i++ ) {
+            printf("%f\t", input[p][i]) ;
+        }
+        for( k = 0 ; k < num_output ; k++ ) {
+            printf("%f\t%f\t", target[p][k], output[p+outputX*k]) ;
+        }
+    }
+    printf("\n");
+    copy_array(nnet->hidden, hidden, ((num_training)*(num_hidden)));
+    copy_array(nnet->hidden_weights, w_IH, ((num_input)*(num_hidden)));
+    copy_array(nnet->output_weights,  w_HO, ((num_hidden)*(num_output)));
+    //nnet->lr = lr;
+    copy_array(nnet->output, output, ((num_training)*(num_output)));
+    
+    return nnet;
+}
+
