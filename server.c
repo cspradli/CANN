@@ -32,16 +32,16 @@ int parse_input(const char *input){
             printf("Need correct username and host to run on specified server\n");
             ret = 0;
         }
-    printf("USRN:%s\n", username);
-    printf("HST:%s\n",host);
+    printf("USERNAME: %s\n", username);
+    printf("HOST:%s\n",host);
     strcat(output, username);
     strcat(output, "@");
     strcat(output, host);
-    printf("OUTPUT %s\n", output);
+    printf("SANITY CHECK: %s\n", output);
     fflush(stdin);
     fflush(stdout);
     if (ret == 1){
-        exec_wget(output, ret);
+        if (!check_input()) exec_all(output);
         return ret;
     } else {
         printf("ERROR in parsing\n");
@@ -89,6 +89,35 @@ void exec_job(char *input, int check){
     }
 }
 
+void exec_all(char *input){
+    printf("Executing job on server %s\n", input);
+    char ssh_run[512];
+    strcat(ssh_run, "ssh ");
+    strcat(ssh_run, input);
+    strcat(ssh_run, " 'wget http://arden.cs.unca.edu/~cspradli/my-nnet; sleep 1; ./my-nnet n;' > output.txt");
+    fflush(stdin);
+    fflush(stdout);
+    if (system(ssh_run)){
+        printf("ERROR IN SSH\n");
+    } else {
+        printf("Succesful server job: check output.txt for output\n");
+    }
+}
+
+int check_input(){
+    char check[8];
+    char *output;
+    printf("\nNext steps include:\n(1) Copying this executable to the server specified (using wget)\n(2) Running this executable through SSH tunnel\nNote: Password will never be shared to this program\nThe only time password should be asked is from server specified's shell\n\n");
+    printf("Proceed? (yes/no) ");
+    output = fgets(check, 8, stdin);
+    if (strcmp(check, "yes")){
+        printf("good: %s", output);
+        return 0;
+    } else {
+        printf("bad: %s", output);
+        return -1;
+    }
+}
 
 /*void server_job(int argc, char **argv){
     if (argc < 2){

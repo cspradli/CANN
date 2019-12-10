@@ -14,4 +14,8 @@ void exec_wget(char *input, int check);
 
 void exec_job(char *input, int check);
 
+void exec_all(char *input);
+
+int check_input();
+
 #endif /* server_h */
