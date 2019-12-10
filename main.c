@@ -23,13 +23,13 @@ int main(int argc, char const *argv[])
     int numOutputs = 1;
     int numHidden = 2;
     double input[5][3] = { {0,0,0}, {0, 0, 0},  {0, 1, 0},  {0, 0, 1},  {0, 1, 1} };
-    double output[5][2] = { {0, 0},  {0, 0},  {0, 1},  {0, 1},  {0, 0} };
+    double output[5][2] = { {0, 0},  {0, 0},  {0, 0},  {0, 0},  {0, 1} };
 
     cann_double *nnet;
     nnet = init_model_double(numTrainingSets,numInputs, numHidden, numOutputs);
     print_all(nnet);
 
-    nnet = model_fit(nnet, numTrainingSets, numInputs, numHidden, numOutputs, input, output, 1000, 0.03);
+    nnet = model_fit(nnet, numTrainingSets, numInputs, numHidden, numOutputs, input, output, 10000, 0.03);
     print_all(nnet);
     free_nnet(nnet);
     } else {

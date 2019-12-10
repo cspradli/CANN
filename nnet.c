@@ -51,7 +51,7 @@ cann_double *model_fit(cann_double *nnet, int num_training, int num_input, int n
     
     //double bias_dih[num_hidden+1], bias_who[num_output+1], bias_dho[num_output+1], bias_wih[num_hidden+1];
 
-    double err, eta = 0.5, alpha = 0.9;
+    double err, eta = 0.5, alpha = 0.95;
     
     int hiddenX, outputX, w_ihX, w_hoX;
 
