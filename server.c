@@ -2,7 +2,10 @@
 
 int get_input(int argc, char const *argv[]){
 
-    if (argc < 3) printf("USAGE: './my-nnet y/n username@host.edu' (y/n for send to server option)\n");
+    if (argc < 2 || argc > 3) {
+        printf("USAGE: './my-nnet y/n username@host.edu' (y/n for send to server option)\n");
+        return -1;
+    }
     if (!strcmp(argv[1], "y")){
         const char *input = argv[2];
         printf("GETTING INPUT %s \n", input);

@@ -3,7 +3,11 @@
  * Date: 12/08/19
  * Author: Caleb Spradlin
  **/
-
+#include <signal.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 
 typedef struct cann_double{
     int num_inputs;

@@ -4,10 +4,15 @@
 #include <string.h>
 #include "server.h"
 int main(int argc, char const *argv[])
-{
+{   
+    pid_t pid;
     if (argc == 3){
+        //Spin off fork to run job on server, wait to hear
+        if ((pid = fork() == 0)){
         printf("Running with server\n");
         get_input(argc, argv);
+        }
+        wait(NULL);
     } else if (argc == 2 && (!strcmp(argv[1], "n"))) {
 
     printf("Running locally\n");

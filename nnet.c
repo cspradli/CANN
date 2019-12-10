@@ -35,46 +35,36 @@ cann_double *init_model_double(int num_training, int num_inputs, int num_hidden,
     nnet->hidden_weights = (double *) calloc(((num_inputs+1)*(num_hidden+1)), sizeof(double));
     nnet->output_weights = (double *) calloc(((num_hidden+1)*(num_outputs+1)), sizeof(double));
 
-    //nnet->hidden = init_zero(nnet->hidden, num_training+1*num_hidden+1);
-    //nnet->output = init_zero(nnet->output, num_training+1*num_outputs+1);
-    //nnet->hiddenBias = init_random(nnet->hiddenBias, num_hidden);
-    //nnet->outBias = init_random(nnet->outBias, num_outputs);
-    //nnet->hidden_weights = init_random(nnet->hidden_weights, (num_inputs+1*num_hidden+1));
-    //nnet->output_weights = init_random(nnet->output_weights, (num_hidden+1*num_outputs+1));
     return nnet;
 
 }
 
 
 cann_double *model_fit_update(cann_double *nnet, int num_training, int num_input, int num_hidden, int num_output, double input[][num_input+1], double target[][num_output+1], int epoch, double lr){
-    int    i ,n, j, k, p, np, op, r_pattern[num_training];
-    
+    int    i ,n, j, k, p, np, op, r_pattern[num_training+1];
     double s_hidden[num_training+1][num_hidden+1];
     double s_out[num_training+1][num_output+1];
     double d_out[num_output+1], s_do[num_hidden+1], d_hidden[num_hidden+1];
     double dw_IH[num_input+1][num_hidden+1], dw_HO[num_hidden+1][num_output+1];
-
-    double hidden[((num_training+1)*(num_hidden+1))];
-    double output[((num_training+1)*(num_output+1))];
-    double w_IH[((num_input+1)*(num_hidden+1))];
-    double w_HO[((num_hidden+1)*(num_output+1))];
+    double hidden[((num_training+1)*(num_hidden+1))], output[((num_training+1)*(num_output+1))];
+    double w_IH[((num_input+1)*(num_hidden+1))], w_HO[((num_hidden+1)*(num_output+1))];
     
     //double bias_dih[num_hidden+1], bias_who[num_output+1], bias_dho[num_output+1], bias_wih[num_hidden+1];
 
     double err, eta = 0.5, alpha = 0.9;
     
-    int hiddenX;
-    int outputX;
-    int w_ihX;
-    int w_hoX;
-    
-    hiddenX = (num_training+1);
-    outputX = (num_training+1);
+    int hiddenX, outputX, w_ihX, w_hoX;
+
+    hiddenX = (num_training+1); 
+    outputX = (num_training+1); 
     w_ihX = (num_input+1);
     w_hoX = (num_hidden+1);
 
-    // INITIALIZATION
-    for( j = 1 ; j <= num_hidden ; j++ ) {    /* initialize w_IH and dw_IH */
+    /**
+     * Initialization of all weights and derivative of weights
+     * Initializes Input to Hidden below
+     **/
+    for( j = 1 ; j <= num_hidden ; j++ ) { 
         for( i = 0 ; i <= num_input ; i++ ) { 
             //bias_dih[j] = 0.0;
             dw_IH[i][j] = 0.0 ;
@@ -82,58 +72,73 @@ cann_double *model_fit_update(cann_double *nnet, int num_training, int num_input
             //bias_wih[j] = init;
         }
     }
-    for( k = 1 ; k <= num_output ; k ++ ) {    /* initialize w_HO and dw_HO */
+
+    /**
+     * Initializes hidden to output below
+     **/
+    for( k = 1 ; k <= num_output ; k ++ ) {
         for( j = 0 ; j <= num_hidden ; j++ ) {
-            
             dw_HO[j][k] = 0.0 ;  
             //bias_dho[k] = 0.0;          
-            
             w_HO[j + w_hoX * k] = init_further();
             //bias_who[k] = init;
         }
     }
      
+    /**
+     * TRAINING
+     * This is where the good stuff happens
+     * We take in the training data, shake it up, then start with:
+     * (1) Forward propagation
+     * (2) Backpropagation
+     **/
     for( n = 0 ; n < epoch ; n++) { 
-           /* iterate weight updates */
-        for( p = 1 ; p <= num_training ; p++ ) {    /* randomize order of training patterns */
+        
+        /**
+         * Randomization
+         **/
+        for( p = 1 ; p <= num_training ; p++ ) {
             r_pattern[p] = p ;
         }
-
         for( p = 1 ; p <= num_training ; p++) {
             np = p + rando() * ( num_training + 1 - p ) ;
             op = r_pattern[p] ; r_pattern[p] = r_pattern[np] ; r_pattern[np] = op ;
         }
 
-        err = 0.0 ;
-        for( np = 0 ; np < num_training ; np++ ) {    /* repeat for all the training patterns */
+        err = 0.0 ; /* Set error to zero for each epoch */
+        for( np = 0 ; np < num_training ; np++ ) {
             p = r_pattern[np];
 
-            for( j = 1 ; j <= num_hidden ; j++ ) {    /* compute hidden unit activations */
+            /**
+             * Computation of hidden unit activations
+             * Follows basic sigmoidal activation
+             **/
+            for( j = 1 ; j <= num_hidden ; j++ ) {
                 s_hidden[p][j] = w_IH[0+w_ihX*j] ;
-                //s_hidden[p][j] = bias_wih[j];
-                for( i = 1 ; i <= num_input ; i++ ) {
-                    s_hidden[p][j] += input[p][i] * w_IH[i+w_ihX*j] ;
-                }
-                //hidden[p+hiddenX*j] = 1.0/(1.0 + exp(-s_hidden[p][j])) ;
+                for( i = 1 ; i <= num_input ; i++ ) {s_hidden[p][j] += input[p][i] * w_IH[i+w_ihX*j] ;}
                 hidden[p+hiddenX*j] = sigmoid(s_hidden[p][j]);
             }
 
-
+            /**
+             * Computation of all output activations
+             * follows basic sigmoidal activation
+             **/
             for( k = 1 ; k <= num_output ; k++ ) {
-                //s_out[p][k] = bias_who[k];// w_HO[0+w_hoX*k] ;
                 s_out[p][k] =  w_HO[0+w_hoX*k] ;
                 for( j = 1 ; j <= num_hidden ; j++ ) {
                     s_out[p][k] += hidden[p+hiddenX*j] * w_HO[j+w_hoX*k] ;
                 }
-                //output[p+outputX*k] = 1.0/(1.0 + exp(-s_out[p][k])) ;
                 output[p+outputX*k] = sigmoid(s_out[p][k]);
                 err += 0.5 * (target[p][k] - output[p+outputX*k]) * (target[p][k] - output[p+outputX*k]) ; 
-
                 d_out[k] = (target[p][k] - output[p+outputX*k]) * output[p+outputX*k] * (1.0 - output[p+outputX*k]) ;
             }
 
-
-            for( j = 1 ; j <= num_hidden ; j++ ) {    /* 'back-propagate' errors to hidden layer */
+            /**
+             * Back propogation
+             * Takes output and backpropagates to the input to find the error
+             * Updates weights and biases while doing so
+             **/
+            for( j = 1 ; j <= num_hidden ; j++ ) {
                 s_do[j] = 0.0 ;
                 for( k =1 ; k <= num_output ; k++ ) {
                     s_do[j] += w_HO[j+w_hoX*k] * d_out[k] ;
@@ -141,25 +146,25 @@ cann_double *model_fit_update(cann_double *nnet, int num_training, int num_input
                 d_hidden[j] = s_do[j] * hidden[p+hiddenX*j] * (1.0 - hidden[p+hiddenX*j]) ;
             }
 
-
-            for( j = 1 ; j <= num_hidden ; j++ ) {     /* update weights w_IH */
+            /**
+             * Update weights of input to hidden layer
+             **/
+            for( j = 1 ; j <= num_hidden ; j++ ) {
                 dw_IH[0][j] = eta * d_hidden[j] + alpha * dw_IH[0][j] ;
-                //bias_dih[j] = eta * d_hidden[j] + alpha * bias_dih[j];
                 w_IH[0+w_ihX*j] += dw_IH[0][j] ;
-                //bias_wih[j] += bias_dih[j];
                 for( i = 1 ; i <= num_input ; i++ ) { 
                     dw_IH[i][j] = eta * input[p][i] * d_hidden[j] + alpha * dw_IH[i][j];
                     w_IH[i+w_ihX*j] += dw_IH[i][j] ;
                 }
             }
 
-
-            for( k = 1 ; k <= num_output ; k ++ ) {    /* update weights w_HO */
+            /**
+             * Update weights for hidden to output hidden layer weights
+             **/
+            for( k = 1 ; k <= num_output ; k ++ ) {
                 dw_HO[0][k] = eta * d_out[k] + alpha * dw_HO[0][k] ;
 
-                //bias_dho[k] = eta * d_out[k] + alpha * bias_dho[k];
                 w_HO[0+w_hoX*k] += dw_HO[0][k] ;
-                //bias_who[k] += bias_dho[k];
                 for( j = 1 ; j <= num_hidden ; j++ ) {
                     dw_HO[j][k] = eta * hidden[p+hiddenX*j] * d_out[k] + alpha * dw_HO[j][k] ;
                     w_HO[j+w_hoX*k] += dw_HO[j][k] ;
@@ -168,7 +173,7 @@ cann_double *model_fit_update(cann_double *nnet, int num_training, int num_input
 
         }
 
-        if( (n%100) == 0 ) printf("\nEpoch %-5d :   err = %f", n, err) ;
+        if( (n%100) == 0 ) printf("\nEpoch %d :   err = %f", n, err) ;
         if( err < 0.0003 ){
             printf("Caught early at err %f", err);
             break;
@@ -197,7 +202,7 @@ cann_double *model_fit_update(cann_double *nnet, int num_training, int num_input
     copy_array(nnet->output_weights,  w_HO, ((num_hidden+1)*(num_output+1)));
     //nnet->lr = lr;
     copy_array(nnet->output, output, ((num_training+1)*(num_output+1)));
-    
+    print_all(nnet);
     return nnet;
 }
 
@@ -214,14 +219,6 @@ void free_nnet(cann_double *in){
     free(in->hidden);
     free(in);
 }
-
-double partial_dError(double x, double y){
-    return x-y;
-}
-
-
-
-
 
 double sigmoid(double x){
     return 1 / (1 + exp(-x));
