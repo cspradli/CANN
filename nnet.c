@@ -51,7 +51,7 @@ cann_double *model_fit(cann_double *nnet, int num_training, int num_input, int n
     double s_out[num_training+1][num_output+1], w_HO[num_hidden+1][num_output+1], output[num_training+1][num_output+1];
     double d_out[num_output+1], s_do[num_hidden+1], d_hidden[num_hidden+1];
     double dw_IH[num_input+1][num_hidden+1], dw_HO[num_hidden+1][num_output+1];
-    double Error, eta = 0.5, alpha = 0.9;
+    double err, eta = 0.5, alpha = 0.9;
   
 
     // INITIALIZATION
@@ -68,17 +68,21 @@ cann_double *model_fit(cann_double *nnet, int num_training, int num_input, int n
         }
     }
      
-    for( n = 0 ; n < epoch ; n++) {    /* iterate weight updates */
+    for( n = 0 ; n < epoch ; n++) { 
+           /* iterate weight updates */
         for( p = 1 ; p <= num_training ; p++ ) {    /* randomize order of training patterns */
             r_pattern[p] = p ;
         }
+
         for( p = 1 ; p <= num_training ; p++) {
             np = p + rando() * ( num_training + 1 - p ) ;
             op = r_pattern[p] ; r_pattern[p] = r_pattern[np] ; r_pattern[np] = op ;
         }
-        Error = 0.0 ;
+
+        err = 0.0 ;
         for( np = 1 ; np <= num_training ; np++ ) {    /* repeat for all the training patterns */
             p = r_pattern[np];
+
             for( j = 1 ; j <= num_hidden ; j++ ) {    /* compute hidden unit activations */
                 s_hidden[p][j] = w_IH[0][j] ;
                 for( i = 1 ; i <= num_input ; i++ ) {
@@ -86,16 +90,20 @@ cann_double *model_fit(cann_double *nnet, int num_training, int num_input, int n
                 }
                 hidden[p][j] = 1.0/(1.0 + exp(-s_hidden[p][j])) ;
             }
+
+
             for( k = 1 ; k <= num_output ; k++ ) {
                 s_out[p][k] = w_HO[0][k] ;
                 for( j = 1 ; j <= num_hidden ; j++ ) {
                     s_out[p][k] += hidden[p][j] * w_HO[j][k] ;
                 }
                 output[p][k] = 1.0/(1.0 + exp(-s_out[p][k])) ;
-                Error += 0.5 * (target[p][k] - output[p][k]) * (target[p][k] - output[p][k]) ; 
+                err += 0.5 * (target[p][k] - output[p][k]) * (target[p][k] - output[p][k]) ; 
 
                 d_out[k] = (target[p][k] - output[p][k]) * output[p][k] * (1.0 - output[p][k]) ;
             }
+
+
             for( j = 1 ; j <= num_hidden ; j++ ) {    /* 'back-propagate' errors to hidden layer */
                 s_do[j] = 0.0 ;
                 for( k = 1 ; k <= num_output ; k++ ) {
@@ -103,6 +111,8 @@ cann_double *model_fit(cann_double *nnet, int num_training, int num_input, int n
                 }
                 d_hidden[j] = s_do[j] * hidden[p][j] * (1.0 - hidden[p][j]) ;
             }
+
+
             for( j = 1 ; j <= num_hidden ; j++ ) {     /* update weights w_IH */
                 dw_IH[0][j] = eta * d_hidden[j] + alpha * dw_IH[0][j] ;
                 w_IH[0][j] += dw_IH[0][j] ;
@@ -111,6 +121,8 @@ cann_double *model_fit(cann_double *nnet, int num_training, int num_input, int n
                     w_IH[i][j] += dw_IH[i][j] ;
                 }
             }
+
+
             for( k = 1 ; k <= num_output ; k ++ ) {    /* update weights w_HO */
                 dw_HO[0][k] = eta * d_out[k] + alpha * dw_HO[0][k] ;
                 w_HO[0][k] += dw_HO[0][k] ;
@@ -119,9 +131,14 @@ cann_double *model_fit(cann_double *nnet, int num_training, int num_input, int n
                     w_HO[j][k] += dw_HO[j][k] ;
                 }
             }
+
         }
-        if( n%100 == 0 ) fprintf(stdout, "\nEpoch %-5d :   Error = %f", n, Error) ;
-        if( Error < 0.0004 ) break ;  /* stop learning when 'near enough' */
+
+        if( n%100 == 0 ) fprintf(stdout, "\nEpoch %-5d :   err = %f", n, err) ;
+        if( err < 0.0003 ){
+            fprintf(stdout, "Caught early at err %f", err);
+            break;
+        } /* stop learning when 'near enough' */
     }
     
     fprintf(stdout, "\n\nNETWORK DATA - EPOCH %d\n\nPat\t", n) ;   /* print network outputs */
@@ -197,7 +214,7 @@ cann_double *model_train(cann_double *nnet, int num_inputs, int num_hidden, int 
              * BAKCPROP
              * Next steps involve:
              * Calculating incremental changre in network weights
-             * Moves network towards minimizing the error of the output
+             * Moves network towards minimizing the err of the output
              * Starts at the node and works itself backward
              **/
             double deltaOut[num_outputs];
@@ -209,7 +226,7 @@ cann_double *model_train(cann_double *nnet, int num_inputs, int num_hidden, int 
 
             /**
              * hidden layer backprop
-             * Error calculation for given node = sum of error across all output nodes
+             * err calculation for given node = sum of err across all output nodes
              **/
             double delta_hidden[num_hidden];
             for (int j=0; j<num_hidden; j++){
@@ -263,7 +280,7 @@ cann_double *train(cann_double *nnet, int num_inputs, int num_hidden, int num_ou
             backprop(nnet, training_in, training_out, lr);
             err += toterror(training_out, nnet->output, nnet->num_outputs);
         }
-        printf("error %.12f || learning rate %f\n", (err/num_training), lr);
+        printf("err %.12f || learning rate %f\n", (err/num_training), lr);
         //lr *= 0.99;
     }
     return nnet;
@@ -305,7 +322,7 @@ void backprop(cann_double *nnet, double *training_input, double *training_out, d
              * BAKCPROP
              * Next steps involve:
              * Calculating incremental changre in network weights
-             * Moves network towards minimizing the error of the output
+             * Moves network towards minimizing the err of the output
              * Starts at the node and works itself backward
              **/
     for (int i=0; i < nnet->num_hidden; i++){
