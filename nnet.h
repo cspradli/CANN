@@ -32,12 +32,9 @@ cann_double *init_model_double(int num_training, int num_inputs, int num_hidden,
 
 cann_double *model_fit(cann_double *nnet, int num_training, int num_input, int num_hidden, int num_output, double input[][num_input+1], double target[][num_output+1], int epoch, double lr);
 
-cann_double *model_fit_update(cann_double *nnet, int num_training, int num_input, int num_hidden, int num_output, double input[][num_input+1], double target[][num_output+1], int epoch, double lr);
-
 /**
  * Performs the training routine 
  **/
-cann_double *model_train(cann_double *nnet, int num_inputs, int num_hidden, int num_outputs, int num_training, double lr, int epochs, int trainingOrder[], double training_in[], double training_out[]);
 
 /**
  * Takes a vector and returns same vector with random values between 0.0 and 1.0
@@ -115,16 +112,3 @@ void copy_array(double arr2[], double arr1[], int size);
  **/
 void print_all(cann_double *in);
 
-double toterror(double* tg, double* o, int size);
-
-double err(double a, double b);
-
-double *predict(cann_double *in, double* input);
-
-void forward_prop(cann_double *nnet, double *in);
-
-cann_double *train(cann_double *nnet, int num_inputs, int num_hidden, int num_outputs, int num_training, double lr, int epochs, int trainingOrder[], double training_in[], double training_out[]);
-
-void backprop(cann_double *nnet, double *training_input, double *training_out, double rate);
-
-double partial_dError(double x, double y);
