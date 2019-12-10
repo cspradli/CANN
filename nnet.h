@@ -9,6 +9,8 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
+
+
 typedef struct cann_double{
     int num_inputs;
     int num_weights;
@@ -17,10 +19,15 @@ typedef struct cann_double{
     int num_outputs;
     int num_training;
     double lr;
+    double *s_hidden;
+    double *s_out;
+    double *d_out;
+    double *s_do;
+    double *d_hidden;
+    double *dw_IH;
+    double *dw_HO;
     double *hidden;
     double *output;
-    double *hiddenBias;
-    double *outBias;
     double *hidden_weights; 
     double *output_weights;
 } cann_double;
@@ -111,4 +118,8 @@ void copy_array(double arr2[], double arr1[], int size);
  * Print all
  **/
 void print_all(cann_double *in);
+
+void save_all(cann_double *in);
+
+void read_all(FILE *in);
 

@@ -22,16 +22,21 @@ cann_double *init_model_double(int num_training, int num_inputs, int num_hidden,
     cann_double* nnet = (cann_double* )malloc(sizeof(cann_double));
     if (!nnet) return 0;
 
-    nnet->num_inputs = num_inputs;
-    nnet->num_hidden = num_hidden;
-    nnet->num_inputs = num_inputs;
-    nnet->num_hidden = num_hidden;
-    nnet->num_outputs = num_outputs;
+    nnet->num_inputs   = num_inputs;
+    nnet->num_hidden   = num_hidden;
+    nnet->num_inputs   = num_inputs;
+    nnet->num_hidden   = num_hidden;
+    nnet->num_outputs  = num_outputs;
     nnet->num_training = num_training;
-    nnet->hidden = (double *) calloc(((num_training+1)*(num_hidden+1)), sizeof(double));
-    nnet->output = (double *) calloc(((num_training+1)*(num_outputs+1)), sizeof(double));
-    nnet->hiddenBias = (double *) calloc(num_hidden, sizeof(double));
-    nnet->outBias = (double *) calloc(num_outputs,  sizeof(double));
+    nnet->s_hidden     = (double *) calloc(((num_training+1)*(num_hidden+1)), sizeof(double));
+    nnet->s_out        = (double *) calloc(((num_training+1)*(num_hidden+1)), sizeof(double));
+    nnet->d_out        = (double *) calloc(((num_training+1)*(num_hidden+1)), sizeof(double));
+    nnet->s_do         = (double *) calloc(((num_training+1)*(num_hidden+1)), sizeof(double));
+    nnet->d_hidden     = (double *) calloc(((num_training+1)*(num_hidden+1)), sizeof(double));
+    nnet->dw_IH        = (double *) calloc(((num_training+1)*(num_hidden+1)), sizeof(double));
+    nnet->dw_HO        = (double *) calloc(((num_training+1)*(num_hidden+1)), sizeof(double));
+    nnet->hidden       = (double *) calloc(((num_training+1)*(num_hidden+1)), sizeof(double));
+    nnet->output       = (double *) calloc(((num_training+1)*(num_outputs+1)), sizeof(double));
     nnet->hidden_weights = (double *) calloc(((num_inputs+1)*(num_hidden+1)), sizeof(double));
     nnet->output_weights = (double *) calloc(((num_hidden+1)*(num_outputs+1)), sizeof(double));
 
@@ -208,15 +213,19 @@ cann_double *model_fit(cann_double *nnet, int num_training, int num_input, int n
 
 
 
-
 /* ************** HELPER FUNCTIONS ***************** */
 void free_nnet(cann_double *in){
     free(in->output_weights);
     free(in->hidden_weights);
-    free(in->outBias);
-    free(in->hiddenBias);
     free(in->output);
     free(in->hidden);
+    free(in->dw_HO);
+    free(in->dw_IH);
+    free(in->d_hidden);
+    free(in->s_do);
+    free(in->d_out);
+    free(in->s_out);
+    free(in->s_hidden);
     free(in);
 }
 
@@ -312,7 +321,7 @@ void print_all(cann_double *nnet){
     print_mat(nnet->output_weights, nnet->num_hidden+1, nnet->num_outputs+1);
     printf("----------BIASES-----------\n");
     printf("hidden BIAS: \n");
-    print_array(nnet->hiddenBias, nnet->num_hidden);
+    //print_array(nnet->hiddenBias, nnet->num_hidden);
     printf("FINAL output BIAS: \n");
     print_array(nnet->output_weights, nnet->num_outputs);
 }
