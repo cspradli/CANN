@@ -50,6 +50,22 @@ int parse_input(const char *input){
 
 }
 
+
+int check_input(){
+    char check[8];
+    char *output;
+    printf("\nNext steps include:\n(1) Copying this executable to the server specified (using wget)\n(2) Running this executable through SSH tunnel\nNote: Password will never be shared to this program\nThe only time password should be asked is from server specified's shell\n\n");
+    printf("Proceed? (yes/no) ");
+    output = fgets(check, 8, stdin);
+    if (strcmp(check, "yes")){
+        printf("good: %s", output);
+        return 0;
+    } else {
+        printf("bad: %s", output);
+        return -1;
+    }
+}
+
 void exec_wget(char *input, int check){
     printf("Executing wget to transfer executable to %s\n", input);
     char ssh_wget[256];
@@ -104,33 +120,5 @@ void exec_all(char *input){
     }
 }
 
-int check_input(){
-    char check[8];
-    char *output;
-    printf("\nNext steps include:\n(1) Copying this executable to the server specified (using wget)\n(2) Running this executable through SSH tunnel\nNote: Password will never be shared to this program\nThe only time password should be asked is from server specified's shell\n\n");
-    printf("Proceed? (yes/no) ");
-    output = fgets(check, 8, stdin);
-    if (strcmp(check, "yes")){
-        printf("good: %s", output);
-        return 0;
-    } else {
-        printf("bad: %s", output);
-        return -1;
-    }
-}
 
-/*void server_job(int argc, char **argv){
-    if (argc < 2){
-        printf("USAGE: './my-nnet (send to server)y/n'\n");
-    }
-    if (strcmp(argv[1], "y") == 0){
-        printf("SENDING JOB TO SERVER\n");
-        if (fork() == 0){ //spin off child to run server commands
-            printf("get command to ssh\n");
-            if(!system("ssh cspradli@montreat.cs.unca.edu 'wget http://arden.cs.unca.edu/~cspradli/my-nnet'"))printf("ERROR: 505\n");
-            if(!system("ssh cspradli@montreat.cs.unca.edu './my-nnet n' > output.txt")) printf("ERROR: 505\n");
-        }
-    } else {
-    }
 
-}*/
