@@ -19,7 +19,7 @@ int main(int argc, char const *argv[])
     int numOutputs = 1;
     int numHidden = 2;
     //int trainingorder[] = {0,1,2,3};
-    double input[5][3] = { {0, 0, 0},  {0, 0, 0},  {0, 1, 0},  {0, 0, 1},  {0, 1, 1} };
+    double input[5][3] = { {0, 0, 0},  {0, 1, 0},  {0, 0, 1},  {0, 1, 1} };
     double output[5][2] = { {0, 0},  {0, 0},  {0, 1},  {0, 1},  {0, 0} };
     //double training_outputs[4] = { 0.0f,1.0f,1.0f,0.0f};
     //double training_inputs[8] = { 0.0f,0.0f,1.0f,0.0f,0.0f,1.0f,1.0f,1.0f };
@@ -30,7 +30,8 @@ int main(int argc, char const *argv[])
 
     //nnet = model_train(nnet, numInputs, numHidden, numOutputs, numTrainingSets, 0.1, 10000, trainingorder, training_inputs, training_outputs);
     //print_all(nnet);
-    nnet = model_fit(nnet, numTrainingSets, numInputs, numHidden, numOutputs, input, output, 1000, 0.03);
+    nnet = model_fit_update(nnet, numTrainingSets, numInputs, numHidden, numOutputs, input, output, 1000, 0.03);
+    nnet = model_fit(nnet, numTrainingSets, numInputs, numHidden, numOutputs, input, output, 10000, 0.03);
     //printf("Trying prediction\n");
     //double test_set[2] = { 0.0f, 0.0f };
     //forward_prop(nnet, test_set);

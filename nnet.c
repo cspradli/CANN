@@ -164,24 +164,40 @@ cann_double *model_fit(cann_double *nnet, int num_training, int num_input, int n
 
 cann_double *model_fit_update(cann_double *nnet, int num_training, int num_input, int num_hidden, int num_output, double input[][num_input+1], double target[][num_output+1], int epoch, double lr){
     int    i ,n, j, k, p, np, op, r_pattern[num_training+1];
-    double s_hidden[num_training+1][num_hidden+1], w_IH[num_input+1][num_hidden+1], hidden[num_training+1][num_hidden+1];
-    double s_out[num_training+1][num_output+1], w_HO[num_hidden+1][num_output+1], output[num_training+1][num_output+1];
+    
+    double s_hidden[num_training+1][num_hidden+1];
+    double s_out[num_training+1][num_output+1];
     double d_out[num_output+1], s_do[num_hidden+1], d_hidden[num_hidden+1];
     double dw_IH[num_input+1][num_hidden+1], dw_HO[num_hidden+1][num_output+1];
+    
+    double hidden[((num_training+1)*(num_hidden+1))];
+    double output[((num_training+1)*(num_output+1))];
+    double w_IH[((num_input+1)*(num_hidden+1))];
+    double w_HO[((num_hidden+1)*(num_output+1))];
+    
     double err, eta = 0.5, alpha = 0.9;
-  
+    
+    int hiddenX;
+    int outputX;
+    int w_ihX;
+    int w_hoX;
+    
+    hiddenX = (num_training+1);
+    outputX = (num_training+1);
+    w_ihX = (num_input+1);
+    w_hoX = (num_hidden+1);
 
     // INITIALIZATION
     for( j = 1 ; j <= num_hidden ; j++ ) {    /* initialize w_IH and dw_IH */
         for( i = 0 ; i <= num_input ; i++ ) { 
             dw_IH[i][j] = 0.0 ;
-            w_IH[i][j] = init_further() ;
+            w_IH[i + w_ihX * j] = init_further() ;
         }
     }
     for( k = 1 ; k <= num_output ; k ++ ) {    /* initialize w_HO and dw_HO */
         for( j = 0 ; j <= num_hidden ; j++ ) {
             dw_HO[j][k] = 0.0 ;              
-            w_HO[j][k] = init_further() ;
+            w_HO[j + w_hoX * k] = init_further() ;
         }
     }
      
@@ -201,51 +217,51 @@ cann_double *model_fit_update(cann_double *nnet, int num_training, int num_input
             p = r_pattern[np];
 
             for( j = 1 ; j <= num_hidden ; j++ ) {    /* compute hidden unit activations */
-                s_hidden[p][j] = w_IH[0][j] ;
+                s_hidden[p][j] = w_IH[0+w_ihX*j] ;
                 for( i = 1 ; i <= num_input ; i++ ) {
-                    s_hidden[p][j] += input[p][i] * w_IH[i][j] ;
+                    s_hidden[p][j] += input[p][i] * w_IH[i+w_ihX*j] ;
                 }
-                hidden[p][j] = 1.0/(1.0 + exp(-s_hidden[p][j])) ;
+                hidden[p+hiddenX*j] = 1.0/(1.0 + exp(-s_hidden[p][j])) ;
             }
 
 
             for( k = 1 ; k <= num_output ; k++ ) {
-                s_out[p][k] = w_HO[0][k] ;
+                s_out[p][k] = w_HO[0+w_hoX*k] ;
                 for( j = 1 ; j <= num_hidden ; j++ ) {
-                    s_out[p][k] += hidden[p][j] * w_HO[j][k] ;
+                    s_out[p][k] += hidden[p+hiddenX*j] * w_HO[j+w_hoX*k] ;
                 }
-                output[p][k] = 1.0/(1.0 + exp(-s_out[p][k])) ;
-                err += 0.5 * (target[p][k] - output[p][k]) * (target[p][k] - output[p][k]) ; 
+                output[p+outputX*k] = 1.0/(1.0 + exp(-s_out[p][k])) ;
+                err += 0.5 * (target[p][k] - output[p+outputX*k]) * (target[p][k] - output[p+outputX*k]) ; 
 
-                d_out[k] = (target[p][k] - output[p][k]) * output[p][k] * (1.0 - output[p][k]) ;
+                d_out[k] = (target[p][k] - output[p+outputX*k]) * output[p+outputX*k] * (1.0 - output[p+outputX*k]) ;
             }
 
 
             for( j = 1 ; j <= num_hidden ; j++ ) {    /* 'back-propagate' errors to hidden layer */
                 s_do[j] = 0.0 ;
                 for( k = 1 ; k <= num_output ; k++ ) {
-                    s_do[j] += w_HO[j][k] * d_out[k] ;
+                    s_do[j] += w_HO[j+w_hoX*k] * d_out[k] ;
                 }
-                d_hidden[j] = s_do[j] * hidden[p][j] * (1.0 - hidden[p][j]) ;
+                d_hidden[j] = s_do[j] * hidden[p+hiddenX*j] * (1.0 - hidden[p+hiddenX*j]) ;
             }
 
 
             for( j = 1 ; j <= num_hidden ; j++ ) {     /* update weights w_IH */
                 dw_IH[0][j] = eta * d_hidden[j] + alpha * dw_IH[0][j] ;
-                w_IH[0][j] += dw_IH[0][j] ;
+                w_IH[0+w_ihX*j] += dw_IH[0][j] ;
                 for( i = 1 ; i <= num_input ; i++ ) { 
                     dw_IH[i][j] = eta * input[p][i] * d_hidden[j] + alpha * dw_IH[i][j];
-                    w_IH[i][j] += dw_IH[i][j] ;
+                    w_IH[i+w_ihX*j] += dw_IH[i][j] ;
                 }
             }
 
 
             for( k = 1 ; k <= num_output ; k ++ ) {    /* update weights w_HO */
                 dw_HO[0][k] = eta * d_out[k] + alpha * dw_HO[0][k] ;
-                w_HO[0][k] += dw_HO[0][k] ;
+                w_HO[0+w_hoX*k] += dw_HO[0][k] ;
                 for( j = 1 ; j <= num_hidden ; j++ ) {
-                    dw_HO[j][k] = eta * hidden[p][j] * d_out[k] + alpha * dw_HO[j][k] ;
-                    w_HO[j][k] += dw_HO[j][k] ;
+                    dw_HO[j][k] = eta * hidden[p+hiddenX*j] * d_out[k] + alpha * dw_HO[j][k] ;
+                    w_HO[j+w_hoX*k] += dw_HO[j][k] ;
                 }
             }
 
@@ -271,7 +287,7 @@ cann_double *model_fit_update(cann_double *nnet, int num_training, int num_input
             printf("%f\t", input[p][i]) ;
         }
         for( k = 1 ; k <= num_output ; k++ ) {
-            printf("%f\t%f\t", target[p][k], output[p][k]) ;
+            printf("%f\t%f\t", target[p][k], output[p+outputX*k]) ;
         }
     }
     printf("\n");

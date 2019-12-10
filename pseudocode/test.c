@@ -1,4 +1,4 @@
-/*#include <stdlib.h>
+#include <stdlib.h>
 #include <stdio.h>
 
 double init_weights(){
@@ -14,8 +14,8 @@ int main(int argc, char const *argv[])
     for (i = 0; i < 5; i++){
         for (j = 0; j < 5; j++){
             double filler = init_weights();
-            twoD[i][j] = filler;
-            oneD[i * 5 + j] = filler;
+            twoD[j][i] = filler;
+            oneD[j + 5 * i] = filler;
         }
     }
     printf("[");
@@ -23,7 +23,7 @@ int main(int argc, char const *argv[])
         printf("\n");
         for (j = 0; j < 5; j++){
             //double filler = init_weights();
-            printf("%f, ", twoD[i][j]);
+            printf("%f, ", twoD[j][i]);
             //oneD[i * 5 + j] = filler;
         }
     }
@@ -40,18 +40,18 @@ int main(int argc, char const *argv[])
         printf("\n");
         for (j = 0; j < 5; j++){
             //double filler = init_weights();
-            printf("2D: %f, ", twoD[i][j]);
-            printf("1D: %f\n", oneD[i * 5 + j]);
+            printf("%d, %d, 2D: %f, ", i, j, twoD[j][i]);
+            printf("%d, %d, 1D: %f\n", i, j, oneD[j + 5 * i]);
             //oneD[i * 5 + j] = filler;
         }
     }
-    printf("%f\n", twoD[4][4]);
-    printf("%f\n", oneD[4 * 5 + 4]);
+    printf("%f\n", twoD[3][1]);
+    printf("%f\n", oneD[3 + 5 * 1]);
     return 0;
-}*/
+}
 // C program to print *  
 // in place of characters 
-#include<stdio.h> 
+/*#include<stdio.h> 
 #include<stdlib.h> 
 int main(void){ 
     char password[55]; 
@@ -68,4 +68,4 @@ int main(void){
     password[p-1]='\0'; 
     printf("\nYou have entered %s as password.",password); 
     getch(); 
-} 
+} */
