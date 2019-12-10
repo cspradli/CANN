@@ -25,6 +25,8 @@ typedef struct cann_double{
  **/
 cann_double *init_model_double(int num_inputs, int num_hidden, int num_outputs);
 
+cann_double *model_fit(cann_double *nnet, int num_training, int num_input, int num_hidden, int num_output, double input[][num_input+1], double target[][num_output+1], int epoch, double lr);
+
 /**
  * Performs the training routine 
  **/
@@ -34,6 +36,8 @@ cann_double *model_train(cann_double *nnet, int num_inputs, int num_hidden, int 
  * Takes a vector and returns same vector with random values between 0.0 and 1.0
  **/
 double *init_random(double input[], int length);
+
+double init_further();
 
 /**
  * Init all weights and biases between 0.0 and 1.0
