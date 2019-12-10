@@ -29,10 +29,10 @@ cann_double *init_model_double(int num_training, int num_inputs, int num_hidden,
     nnet->num_outputs  = num_outputs;
     nnet->num_training = num_training;
     nnet->s_hidden     = (double *) calloc(((num_training+1)*(num_hidden+1)), sizeof(double));
-    nnet->s_out        = (double *) calloc(((num_training+1)*(num_hidden+1)), sizeof(double));
-    nnet->d_out        = (double *) calloc(((num_training+1)*(num_hidden+1)), sizeof(double));
-    nnet->s_do         = (double *) calloc(((num_training+1)*(num_hidden+1)), sizeof(double));
-    nnet->d_hidden     = (double *) calloc(((num_training+1)*(num_hidden+1)), sizeof(double));
+    nnet->s_out        = (double *) calloc(((num_training+1)*(num_outputs+1)), sizeof(double));
+    nnet->d_out        = (double *) calloc((num_outputs+1), sizeof(double));
+    nnet->s_do         = (double *) calloc((num_hidden+1), sizeof(double));
+    nnet->d_hidden     = (double *) calloc((num_hidden+1), sizeof(double));
     nnet->dw_IH        = (double *) calloc(((num_training+1)*(num_hidden+1)), sizeof(double));
     nnet->dw_HO        = (double *) calloc(((num_training+1)*(num_hidden+1)), sizeof(double));
     nnet->hidden       = (double *) calloc(((num_training+1)*(num_hidden+1)), sizeof(double));
