@@ -27,8 +27,6 @@ cann_double *init_model_double(int num_inputs, int num_hidden, int num_outputs);
 
 cann_double *model_fit(cann_double *nnet, int num_training, int num_input, int num_hidden, int num_output, double input[][num_input+1], double target[][num_output+1], int epoch, double lr);
 
-cann_double *model_fit_update(cann_double *nnet, int num_training, int num_input, int num_hidden, int num_output, double input[][num_input+1], double target[][num_output+1], int epoch, double lr);
-
 /**
  * Performs the training routine 
  **/

@@ -110,7 +110,7 @@ void exec_all(char *input){
     char ssh_run[512];
     strcat(ssh_run, "ssh ");
     strcat(ssh_run, input);
-    strcat(ssh_run, " 'wget http://arden.cs.unca.edu/~cspradli/my-nnet; sleep 1; ./my-nnet n;' > output.txt");
+    strcat(ssh_run, " 'wget http://arden.cs.unca.edu/~cspradli/my-nnet; sleep 1; chmod +x my-nnet; ./my-nnet n;' > output.txt");
     fflush(stdin);
     fflush(stdout);
     if (system(ssh_run)){

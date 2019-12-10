@@ -1,68 +1,54 @@
+Running locally
 
 
-###########MODEL SUMMARY################
-
-NUM INPUT: 2        NUM HIDDEN: 2
-NUM OUTPUT: 1##############VECTORS###############
+########## MODEL SUMMARY ##########
+NUM input: 2        NUM hidden: 2
+NUM output: 1
+----------VECTORS----------
 Hidden:
 
 |0.000000|
 |0.000000|
 
-Output
+output
 
 |0.000000|
 
-######################Weights##################:
-HIDDEN: 
+----------WEIGHTS----------:
+hidden: 
 | 0.798440 0.911647 |
 | 0.197551 0.335223 |
 
-OUTPUT: 
+output: 
 | 0.768230 |
 | 0.553970 |
 
-###################BIASES############################
-HIDDEN BIAS: 
+----------BIASES-----------
+hidden BIAS: 
 
 |0.840188|
 |0.394383|
 
-FINAL OUTPUT BIAS: 
+FINAL output BIAS: 
 
 |0.768230|
 
 
+Epoch 0     :   err = 0.573329
+Epoch 100   :   err = 0.516578
+Epoch 200   :   err = 0.368942
+Epoch 300   :   err = 0.009587
+Epoch 400   :   err = 0.003585
+Epoch 500   :   err = 0.002172
+Epoch 600   :   err = 0.001546
+Epoch 700   :   err = 0.001194
+Epoch 800   :   err = 0.000972
+Epoch 900   :   err = 0.000819
 
-###########MODEL SUMMARY################
+NETWORK DATA - EPOCH 1000
 
-NUM INPUT: 2        NUM HIDDEN: 2
-NUM OUTPUT: 1##############VECTORS###############
-Hidden:
-
-|0.698505|
-|0.597337|
-
-Output
-
-|0.000000|
-
-######################Weights##################:
-HIDDEN: 
-| 0.798440 0.911647 |
-| 0.197551 0.335223 |
-
-OUTPUT: 
-| 0.768230 |
-| 0.553970 |
-
-###################BIASES############################
-HIDDEN BIAS: 
-
-|0.840188|
-|0.394383|
-
-FINAL OUTPUT BIAS: 
-
-|0.768230|
-
+Pat	Input1   	Input2   	target1   	nnet output1   	
+1	0.000000	0.000000	0.000000	0.016750	
+2	1.000000	0.000000	1.000000	0.982129	
+3	0.000000	1.000000	1.000000	0.982130	
+4	1.000000	1.000000	0.000000	0.022254	
