@@ -8,7 +8,7 @@ int main(int argc, char const *argv[])
     if (argc == 3){
         printf("Running with server\n");
         get_input(argc, argv);
-    } else if (argc == 1) {
+    } else if (argc == 2 && (!strcmp(argv[1], "n"))) {
 
     printf("Running locally\n");
     
@@ -42,7 +42,7 @@ int main(int argc, char const *argv[])
     //print_array(predict(nnet, test_set), nnet->num_outputs);
     free_nnet(nnet);
     } else {
-        printf("Usage: ./my-nnet y/n username@host.edy \n (y/n for running on server)\n(username@host.edu to use as server to run on\n");
+        printf("Usage: ./my-nnet y(y/n) (if yes)username@host.edu \n(y/n for running on server)\n(username@host.edu to use as server to run on)\n");
     }
     
     return 0;
