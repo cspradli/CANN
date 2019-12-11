@@ -27,10 +27,10 @@ int main(int argc, char const *argv[])
     double output[5][2] = { {0, 0},  {0, 0},  {0, 0},  {0, 0},  {0, 1} };
 
     cann_double *nnet;
-    nnet = init_model_double(numTrainingSets,numInputs, numHidden, numOutputs);
+    nnet = init_model_double(numTrainingSets,numInputs, numHidden, numOutputs, 0);
     print_all(nnet);
 
-    nnet = model_fit(nnet, numTrainingSets, numInputs, numHidden, numOutputs, input, output, 10000, 0.03);
+    nnet = model_fit(nnet,numTrainingSets, numInputs, numHidden, numOutputs, input, output, 10000, 0.03);
     print_all(nnet);
     nnet_save(nnet, "./yee");
     free_nnet(nnet);
