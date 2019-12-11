@@ -222,7 +222,7 @@ cann_double *model_fit(cann_double *nnet, int num_training, int num_input, int n
         }
     
     }
-    /*pthread_t tid[4];
+    pthread_t tid[4];
     struct arg targ[4];
     for (i=0; i<4; i++){
         if (i==0){
@@ -246,61 +246,22 @@ cann_double *model_fit(cann_double *nnet, int num_training, int num_input, int n
             targ[i].size= ((num_training+1)*(num_output+1));
             pthread_create(&tid[i], NULL, thread, (void *) &targ[i]);
         }
-    }*/
+    }/*
     copy_array(nnet->hidden, hidden, ((num_training+1)*(num_hidden+1)));
     copy_array(nnet->hidden_weights, w_IH, ((num_input+1)*(num_hidden+1)));
     copy_array(nnet->output_weights,  w_HO, ((num_hidden+1)*(num_output+1)));
     copy_array(nnet->output, output, ((num_training+1)*(num_output+1)));
-    return nnet;
+    */return nnet;
 }
 
 
-/*void *thread(void *targ){
+void *thread(void *targ){
     struct arg* arg = (struct arg*) targ;
-    //pthread_detach(pthread_self());
     pthread_mutex_lock(&mutex1);
-    //rintf("in here as %lu\n", pthread_self());
     copy_array( arg->a, arg->b, arg->size);
     pthread_mutex_lock(&mutex1);
     pthread_exit(0);
-    //return NULL;
-}*/
-/*
-void *spin_thread(void *larg){
-    printf("yee haw\n");
-    struct arg* arg = (struct arg*) larg;
-    printf("<<<<<<<<<<<<<<<<<<< Thread created connection = %s >>>>>>>>>>>>>>>>>>\n", arg->argv[2]);
-    pthread_detach(pthread_self());
-    printf("Running with server\n");
-    get_input(arg->argc, arg->argv);
-    pthread_exit(0);
-}*/
-
-/*void multi_train(int num_threads,int num_training, int num_input, int num_hidden, int num_output, double input[][num_input+1], double target[][num_output+1], int epoch, double lr){
-    pthread_t tid[num_threads];
-    struct arg targ[num_threads];
-    cann_double *nets[num_threads];
-    int epoch_in = epoch;
-    double err = 100;
-    double *erray[num_threads];
-    double lr_in = 0.1;
-    int num_r = 1;
-    for(int i=0; i<num_threads;i++){
-        nets[i] = init_model_double(num_training, num_input, num_hidden, num_output, 0);
-        targ[i].epoch = epoch_in;
-        targ[i].err = err;
-        targ[i].lr = lr_in;
-        targ[i].my_data = nets[i];
-        targ[i].num_rows = num_r;
-        pthread_create(&tid[i], NULL, thread, (void *)&targ[i]);
-        printf("pthread_created %d\n", i);
-    }
-    //sleep(2);
-    for (int i=0; i<num_threads; i++){
-        pthread_join(tid[i], (void **)&(erray[i]));
-    }
-
-}*/
+}
 
 
 /* ************** HELPER FUNCTIONS ***************** */

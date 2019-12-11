@@ -7,7 +7,6 @@
 int main(int argc, char const *argv[])
 {   
     pid_t pid;
-    //pthread_t tid;
     if (argc == 3){
         //Spin off fork to run job on server, wait to hear
         if ((pid = fork() == 0)){
@@ -15,10 +14,6 @@ int main(int argc, char const *argv[])
         get_input(argc, argv);
         }
         wait(NULL);
-        //struct arg targ;
-        //targ.argc = argc;
-        //targ.argv = argv;
-        //pthread_create(&tid, NULL, spin_thread, (void *) &targ);
     } else if (argc == 2 && (!strcmp(argv[1], "n"))) {
 
     printf("Running locally\n");
@@ -30,15 +25,8 @@ int main(int argc, char const *argv[])
     double input[5][3] = { {0,0,0}, {0, 0, 0},  {0, 1, 0},  {0, 0, 1},  {0, 1, 1} };
     double output[5][2] = { {0, 0},  {0, 0},  {0, 0},  {0, 0},  {0, 1} };
 
-    cann_double *nnet;
-    nnet = init_model_double(numTrainingSets,numInputs, numHidden, numOutputs, 0);
-    print_all(nnet);
-
-    nnet = model_fit(nnet,numTrainingSets, numInputs, numHidden, numOutputs, input, output, 10000, 0.03);
-    print_all(nnet);
-    free_nnet(nnet);
-    
-    //multi_train(2,numTrainingSets, numInputs, numHidden, numOutputs, input, output, 1000, 0.03);
+    cann_double *nn = init_model_double(numTrainingSets, numInputs, numHidden, numOutputs, 0);
+    nn = model_fit(nn, numTrainingSets, numInputs, numHidden, numOutputs, input, output, 10000, 0.3);
     } else {
         printf("Usage: ./my-nnet y(y/n) (if yes)username@host.edu\n(y/n for running on server)\n(username@host.edu to use as server to run on)\n");
     }

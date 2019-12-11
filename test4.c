@@ -7,6 +7,12 @@
 
 int main(int argc, char const *argv[])
 {
+    /**
+     * TEST CASE 4
+     * Try to learn this function:  [(¬B v ¬C) v ¬A]
+     * Remember we need padding for biases
+     * 
+     **/
     int numTrainingSets = 7;
     int numInputs = 3;
     int numOutputs = 1;
@@ -19,7 +25,7 @@ int main(int argc, char const *argv[])
     nnet = init_model_double(numTrainingSets, numInputs, numHidden, numOutputs, 0);
     nnet = model_fit(nnet, numTrainingSets, numInputs, numHidden, numOutputs, input, output, 10000, 0.1);
     print_all(nnet);
-    nnet_save(nnet, "./models/nnet4");
+    //nnet_save(nnet, "./models/nnet4");
     free_nnet(nnet);
    
 /*

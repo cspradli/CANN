@@ -30,7 +30,7 @@ typedef struct cann_double{
 } cann_double;
 
 
-/*
+
 struct arg {
  //   double *a;
  //   double *b;
@@ -42,35 +42,49 @@ struct arg {
     double *b;
  //   int argc;
 //    char **argv;
-};*/
-
-
+};
+/*
+struct arg {
+  int size;
+  int x;
+  int y;
+  double **in1;
+  double **in2;
+}*/
 
 /**
- * Initializes a neural net
+ * Initializes a neural net with all necessary arrays needed
+ * Returns a cann_double struct
  **/
 cann_double *init_model_double(int num_training, int num_inputs, int num_hidden, int num_outputs, int prev_trained);
 
 
-
+/**
+ * Performs the training routine
+ * This is the meat of the training
+ * Unfortunately it is sequential so no way of multithreading it 
+ **/
 cann_double *model_fit(cann_double *nnet, int num_training, int num_input, int num_hidden, int num_output, double input[][num_input+1], double target[][num_output+1], int epoch, double lr);
 
 
 void multi_train(int num_threads,int num_training, int num_input, int num_hidden, int num_output, double input[][num_input+1], double target[][num_output+1], int epoch, double lr);
 
-
+/**
+ * Current pthread function
+ **/
 void *thread(void *targ);
 
 //void *spin_thread(void *larg);
-/**
- * Performs the training routine 
- **/
+
 
 /**
  * Takes a vector and returns same vector with random values between 0.0 and 1.0
  **/
 double *init_random(double input[], int length);
 
+/**
+ * Same random equation as above but for single vals
+ **/
 double init_further();
 
 /**
@@ -136,7 +150,11 @@ void shuffle(int arr[], int n);
  **/
 void free_nnet(cann_double *in);
 
+/**
+ * Copies array vals one at a time
+ **/
 void copy_array(double arr2[], double arr1[], int size);
+
 /**
  * Print all
  **/

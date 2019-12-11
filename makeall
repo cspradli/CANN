@@ -1,4 +1,4 @@
-make;
+make -f Makefile1;
 make -f make2;
 make -f Makefile3;
 make -f Makefile4;
