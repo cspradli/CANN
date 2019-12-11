@@ -222,7 +222,31 @@ cann_double *model_fit(cann_double *nnet, int num_training, int num_input, int n
         }
     
     }
-
+    /*pthread_t tid[4];
+    struct arg targ[4];
+    for (i=0; i<4; i++){
+        if (i==0){
+            targ[i].a = nnet->hidden;
+            targ[i].b = hidden;
+            targ[i].size= ((num_training+1)*(num_hidden+1));
+            pthread_create(&tid[i], NULL, thread, (void *) &targ[i]);
+        } else if(i ==1){
+            targ[i].a = nnet->hidden_weights;
+            targ[i].b = w_IH;
+            targ[i].size= ((num_input+1)*(num_hidden+1));
+            pthread_create(&tid[i], NULL, thread, (void *) &targ[i]);
+        } else if(i==2){
+            targ[i].a = nnet->output_weights;
+            targ[i].b = w_HO;
+            targ[i].size= ((num_hidden+1)*(num_output+1));
+            pthread_create(&tid[i], NULL, thread, (void *) &targ[i]);
+        } else if(i==3){
+            targ[i].a = nnet->output;
+            targ[i].b = output;
+            targ[i].size= ((num_training+1)*(num_output+1));
+            pthread_create(&tid[i], NULL, thread, (void *) &targ[i]);
+        }
+    }*/
     copy_array(nnet->hidden, hidden, ((num_training+1)*(num_hidden+1)));
     copy_array(nnet->hidden_weights, w_IH, ((num_input+1)*(num_hidden+1)));
     copy_array(nnet->output_weights,  w_HO, ((num_hidden+1)*(num_output+1)));

@@ -1,3 +1,4 @@
 make clean;
 make -f make2 clean;
 make -f Makefile3 clean;
+make -f Makefile4 clean;
