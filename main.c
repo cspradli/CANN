@@ -7,7 +7,7 @@
 int main(int argc, char const *argv[])
 {   
     pid_t pid;
-    if (argc == 3){
+    if (argc == 4){
         //Spin off fork to run job on server, wait to hear
         if ((pid = fork() == 0)){
         printf("Running with server\n");
@@ -39,7 +39,7 @@ int main(int argc, char const *argv[])
     print_all(my_net);
     free_nnet(my_net);
     } else {
-        printf("Usage: ./my-nnet y(y/n) (if yes)username@host.edu \n(y/n for running on server)\n(username@host.edu to use as server to run on)\n");
+        printf("Usage: ./my-nnet y(y/n) (if yes)username@host.edu\n(y/n for running on server)\n(username@host.edu to use as server to run on)\n");
     }
     
     return 0;

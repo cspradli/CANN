@@ -15,7 +15,7 @@ typedef struct
     double** target;
     int num_input;
     int num_output;
-    int num_rows
+    int num_rows;
 } data;
 
 struct arg {

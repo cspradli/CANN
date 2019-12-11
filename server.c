@@ -2,7 +2,7 @@
 
 int get_input(int argc, char const *argv[]){
 
-    if (argc < 2 || argc > 3) {
+    if (argc < 2 || argc > 5) {
         printf("USAGE: './my-nnet y/n username@host.edu' (y/n for send to server option)\n");
         return -1;
     }

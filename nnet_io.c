@@ -45,17 +45,17 @@ char *get_ln(FILE* file){
 
 void parse_data(data *in, char* line, int row)
 {
-    int cols = (in->num_input+1) + (in->num_output+1);
+    int cols = ((in->num_input+1) + (in->num_output+1));
     for(int col = 0; col < cols; col++)
     {
-        printf("yee %d, %d \n", col, cols);
         const double val = atof(strtok(col == 0 ? line : NULL, " "));
-        if(col < (in->num_input+5)){
-            printf("in here %d %d\n", col, in->num_input);
+        if(col < (in->num_input+1)){
+            printf("LESS THAN %d %d\n", col, row);
             in->target_in[row][col] = val;
          } else {
-             printf("in here TOO%d %d\n", col, in->num_input);
+             printf("GREATER THAN %d %d\n", col, in->num_input);
             in->target[row][col - (in->num_input+1)] = val;
+            printf("GT2 %d %d\n", col, in->num_input);
          }
     }
 }
@@ -80,26 +80,25 @@ data *get_data(char *path, int num_inputs, int num_outputs){
     
     for (int i=0; i < num_rows; i++){
         char *line = get_ln(file);
-        //printf("%s\n", line);
-        fflush(stdout);
+        printf("%s\n", line);
         targ[i].num_rows = num_rows;
-        targ[i].path = path;
+        targ[i].path = line;
         targ[i].my_data = new_dat;
+        //parse_data(new_dat, line, num_rows);
         pthread_create(&tid[i], NULL, worker_thread, (void *)&targ[i]);
         free(line);
     }
-
+    printf("hey\n");
     for (int i=0; i < num_rows; i++){
         pthread_join(tid[i], NULL);
     }
     fclose(file);
-    //print_mat(new_dat->target_in, num_rows+1, num_inputs+3);
     return new_dat;
 }
 
 double **init_2d(int rows, int columns){
     double **r = (double **) malloc((rows) * sizeof(double*));
-    for(int i=0; i < columns; i++){
+    for(int i=0; i < rows; i++){
         r[i] = (double*) malloc((columns) * sizeof(double));
     }
     return r;
