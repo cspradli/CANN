@@ -1,5 +1,7 @@
 #include "server.h"
 
+
+
 int get_input(int argc, char const *argv[]){
 
     if (argc < 2 || argc > 5) {
@@ -44,7 +46,13 @@ int parse_input(const char *input){
     fflush(stdin);
     fflush(stdout);
     if (ret == 1){
-        if (!check_input()) exec_all(output);
+        if (!check_input()){
+            //struct arg targ;
+            //targ.input = output;
+            //pthread_create(&tid, NULL, spin_thread, (void *) &targ);
+            exec_all(output);
+            
+        }
         return ret;
     } else {
         printf("ERROR in parsing\n");

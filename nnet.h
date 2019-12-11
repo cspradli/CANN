@@ -10,7 +10,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-
+#include <pthread.h>
 
 
 typedef struct cann_double{
@@ -22,11 +22,21 @@ typedef struct cann_double{
     int num_training;
     int prev_trained;
     double lr;
+    double err;
     double *hidden;
     double *output;
     double *hidden_weights; 
     double *output_weights;
 } cann_double;
+
+struct arg {
+    int size;
+    double *a;
+    double *b;
+//    int argc;
+//    char **argv;
+};
+
 
 /**
  * Initializes a neural net
@@ -38,6 +48,12 @@ cann_double *init_model_double(int num_training, int num_inputs, int num_hidden,
 cann_double *model_fit(cann_double *nnet, int num_training, int num_input, int num_hidden, int num_output, double input[][num_input+1], double target[][num_output+1], int epoch, double lr);
 
 
+void multi_train(int num_threads,int num_training, int num_input, int num_hidden, int num_output, double input[][num_input+1], double target[][num_output+1], int epoch, double lr);
+
+
+void *thread(void *targ);
+
+//void *spin_thread(void *larg);
 /**
  * Performs the training routine 
  **/

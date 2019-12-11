@@ -10,8 +10,7 @@
 #include "nnet.h"
 #include "nnet_io.h"
 
-
-
+pthread_mutex_t mutex1 = PTHREAD_MUTEX_INITIALIZER;
 
 
 #define rando() ((double)rand()/((double)RAND_MAX+1))
@@ -29,13 +28,6 @@ cann_double *init_model_double(int num_training, int num_inputs, int num_hidden,
     nnet->num_outputs  = num_outputs;
     nnet->num_training = num_training;
     nnet->prev_trained = prev_trained;
-    /*nnet->s_hidden     = (double *) calloc(((num_training+1)*(num_hidden+1)), sizeof(double));
-    nnet->s_out        = (double *) calloc(((num_training+1)*(num_outputs+1)), sizeof(double));
-    nnet->d_out        = (double *) calloc((num_outputs+1), sizeof(double));
-    nnet->s_do         = (double *) calloc((num_hidden+1), sizeof(double));
-    nnet->d_hidden     = (double *) calloc((num_hidden+1), sizeof(double));
-    nnet->dw_IH        = (double *) calloc(((num_training+1)*(num_hidden+1)), sizeof(double));
-    nnet->dw_HO        = (double *) calloc(((num_training+1)*(num_hidden+1)), sizeof(double));*/
     nnet->hidden       = (double *) calloc(((num_training+1)*(num_hidden+1)), sizeof(double));
     nnet->output       = (double *) calloc(((num_training+1)*(num_outputs+1)), sizeof(double));
     nnet->hidden_weights = (double *) calloc(((num_inputs+1)*(num_hidden+1)), sizeof(double));
@@ -58,7 +50,7 @@ cann_double *model_fit(cann_double *nnet, int num_training, int num_input, int n
     //double bias_dih[num_hidden+1], bias_who[num_output+1], bias_dho[num_output+1], bias_wih[num_hidden+1];
 
     double err, eta = 0.01, alpha = 0.9;
-    
+    double error_out = 0.0;
     int hiddenX, outputX, w_ihX, w_hoX;
 
     hiddenX = (num_training+1); 
@@ -67,7 +59,11 @@ cann_double *model_fit(cann_double *nnet, int num_training, int num_input, int n
     w_hoX = (num_hidden+1);
 
     if (nnet->prev_trained == 1){
-
+        printf("Working with pre-trained model\n");
+        copy_array(hidden, nnet->hidden, ((num_training+1)*(num_hidden+1)));
+        copy_array(output, nnet->output, ((num_training+1)*(num_output+1)));
+        copy_array(w_IH, nnet->hidden_weights, ((num_input+1)*(num_hidden+1)));
+        copy_array(w_HO, nnet->output_weights, ((num_hidden+1)*(num_output+1)));
         for( j = 1 ; j <= num_hidden ; j++ ) { 
             for( i = 0 ; i <= num_input ; i++ ) { 
             dw_IH[i][j] = 0.0 ;
@@ -151,7 +147,7 @@ cann_double *model_fit(cann_double *nnet, int num_training, int num_input, int n
                     s_out[p][k] += hidden[p+hiddenX*j] * w_HO[j+w_hoX*k] ;
                 }
                 output[p+outputX*k] = sigmoid(s_out[p][k]);
-                err += 0.5 * (target[p][k] - output[p+outputX*k]) * (target[p][k] - output[p+outputX*k]) ; 
+                err += 0.5 * (target[p][k] - output[p+outputX*k]) * (target[p][k] - output[p+outputX*k]) ;
                 d_out[k] = (target[p][k] - output[p+outputX*k]) * output[p+outputX*k] * (1.0 - output[p+outputX*k]) ;
             }
 
@@ -205,9 +201,9 @@ cann_double *model_fit(cann_double *nnet, int num_training, int num_input, int n
 
         if( (n%100) == 0 ) printf("\nEpoch %d :   err = %f", n, err) ;
         if( err < 0.0003 ){
-            printf("Caught early at err %f", err);
+            printf("Caught early at err %f\n", err);
             break;
-        } /* stop learning when 'near enough' */
+        } 
 
 
     }
@@ -227,14 +223,89 @@ cann_double *model_fit(cann_double *nnet, int num_training, int num_input, int n
         }
     
     }
+    
+    pthread_t tid[4];
+    struct arg targ[4];
+    for (i=0; i<4; i++){
+        if (i==0){
+            targ[i].a = nnet->hidden;
+            targ[i].b = hidden;
+            targ[i].size= ((num_training+1)*(num_hidden+1));
+            pthread_create(&tid[i], NULL, thread, (void *) &targ[i]);
+        } else if(i ==1){
+            targ[i].a = nnet->hidden_weights;
+            targ[i].b = w_IH;
+            targ[i].size= ((num_input+1)*(num_hidden+1));
+            pthread_create(&tid[i], NULL, thread, (void *) &targ[i]);
+        } else if(i==2){
+            targ[i].a = nnet->output_weights;
+            targ[i].b = w_HO;
+            targ[i].size= ((num_hidden+1)*(num_output+1));
+            pthread_create(&tid[i], NULL, thread, (void *) &targ[i]);
+        } else if(i==3){
+            targ[i].a = nnet->output;
+            targ[i].b = output;
+            targ[i].size= ((num_training+1)*(num_output+1));
+            pthread_create(&tid[i], NULL, thread, (void *) &targ[i]);
+        }
+    }
 
-    copy_array(nnet->hidden, hidden, ((num_training+1)*(num_hidden+1)));
-    copy_array(nnet->hidden_weights, w_IH, ((num_input+1)*(num_hidden+1)));
-    copy_array(nnet->output_weights,  w_HO, ((num_hidden+1)*(num_output+1)));
-    copy_array(nnet->output, output, ((num_training+1)*(num_output+1)));
+    
+    //copy_array(nnet->hidden, hidden, ((num_training+1)*(num_hidden+1)));
+    //copy_array(nnet->hidden_weights, w_IH, ((num_input+1)*(num_hidden+1)));
+    //copy_array(nnet->output_weights,  w_HO, ((num_hidden+1)*(num_output+1)));
+    //copy_array(nnet->output, output, ((num_training+1)*(num_output+1)));
+    nnet->err = error_out;
     return nnet;
 }
 
+
+void *thread(void *targ){
+    struct arg* arg = (struct arg*) targ;
+    //pthread_detach(pthread_self());
+    pthread_mutex_lock(&mutex1);
+    //rintf("in here as %lu\n", pthread_self());
+    copy_array( arg->a, arg->b, arg->size);
+    pthread_mutex_lock(&mutex1);
+    pthread_exit(0);
+    //return NULL;
+}
+/*
+void *spin_thread(void *larg){
+    printf("yee haw\n");
+    struct arg* arg = (struct arg*) larg;
+    printf("<<<<<<<<<<<<<<<<<<< Thread created connection = %s >>>>>>>>>>>>>>>>>>\n", arg->argv[2]);
+    pthread_detach(pthread_self());
+    printf("Running with server\n");
+    get_input(arg->argc, arg->argv);
+    pthread_exit(0);
+}*/
+
+/*void multi_train(int num_threads,int num_training, int num_input, int num_hidden, int num_output, double input[][num_input+1], double target[][num_output+1], int epoch, double lr){
+    pthread_t tid[num_threads];
+    struct arg targ[num_threads];
+    cann_double *nets[num_threads];
+    int epoch_in = epoch;
+    double err = 100;
+    double *erray[num_threads];
+    double lr_in = 0.1;
+    int num_r = 1;
+    for(int i=0; i<num_threads;i++){
+        nets[i] = init_model_double(num_training, num_input, num_hidden, num_output, 0);
+        targ[i].epoch = epoch_in;
+        targ[i].err = err;
+        targ[i].lr = lr_in;
+        targ[i].my_data = nets[i];
+        targ[i].num_rows = num_r;
+        pthread_create(&tid[i], NULL, thread, (void *)&targ[i]);
+        printf("pthread_created %d\n", i);
+    }
+    //sleep(2);
+    for (int i=0; i<num_threads; i++){
+        pthread_join(tid[i], (void **)&(erray[i]));
+    }
+
+}*/
 
 
 /* ************** HELPER FUNCTIONS ***************** */

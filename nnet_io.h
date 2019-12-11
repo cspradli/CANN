@@ -17,12 +17,12 @@ typedef struct
     int num_output;
     int num_rows;
 } data;
-
+/*
 struct arg {
     data *my_data;
     char *path;
     int num_rows;
-};
+};*/
 
 void *worker_thread(void *targ);
 
@@ -42,6 +42,7 @@ void nnet_save(cann_double *nnet, char *path);
 
 cann_double *nnet_load(char *path);
 
+double *twoDoneD(double **in, int sizeX, int sizeY);
 
 
 #endif /* server_h */

@@ -7,13 +7,18 @@
 int main(int argc, char const *argv[])
 {   
     pid_t pid;
-    if (argc == 4){
+    //pthread_t tid;
+    if (argc == 3){
         //Spin off fork to run job on server, wait to hear
         if ((pid = fork() == 0)){
         printf("Running with server\n");
         get_input(argc, argv);
         }
         wait(NULL);
+        //struct arg targ;
+        //targ.argc = argc;
+        //targ.argv = argv;
+        //pthread_create(&tid, NULL, spin_thread, (void *) &targ);
     } else if (argc == 2 && (!strcmp(argv[1], "n"))) {
 
     printf("Running locally\n");
@@ -32,12 +37,10 @@ int main(int argc, char const *argv[])
 
     nnet = model_fit(nnet,numTrainingSets, numInputs, numHidden, numOutputs, input, output, 10000, 0.03);
     print_all(nnet);
-    nnet_save(nnet, "./yee");
+    nnet_save(nnet, "./models/nnet2");
     free_nnet(nnet);
-    cann_double *my_net;
-    my_net = nnet_load("./yee");
-    print_all(my_net);
-    free_nnet(my_net);
+    
+    //multi_train(2,numTrainingSets, numInputs, numHidden, numOutputs, input, output, 1000, 0.03);
     } else {
         printf("Usage: ./my-nnet y(y/n) (if yes)username@host.edu\n(y/n for running on server)\n(username@host.edu to use as server to run on)\n");
     }
