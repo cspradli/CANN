@@ -18,7 +18,13 @@ typedef struct
 
 double **init_2d(int rows, int columns);
 
-data *get_data(int num_inputs, int num_outputs, int num_rows);
+data *get_data(char *path, int num_inputs, int num_outputs);
+
+char *get_ln(FILE* file);
+
+void parse_data(data *in, char *line, int row);
+
+int get_lines(char *path);
 
 void free_data(data *in);
 

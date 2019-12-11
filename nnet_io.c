@@ -1,5 +1,76 @@
 #include "nnet_io.h"
 
+int get_lines(char *path){
+    FILE *file = fopen(path, "r");
+    int line_count = 1;
+    char chr;
+    if (file == NULL){
+        printf("could not read from %s", path);
+        return 0;
+    }
+    for (chr = getc(file); chr != EOF; chr = getc(file)){
+        if (chr == '\n') line_count++;
+    }
+    fclose(file);
+    return line_count;
+}
+
+char *get_ln(FILE* file){
+    char ch;
+    int r = 0;
+    int buf_size = 128;
+    char *line = (char *) malloc(buf_size * sizeof(char));
+    while ((ch = getc(file)) != EOF && ch != '\n')
+    {
+        line[r++] = ch;
+        if(r + 1 == buf_size){
+            line = (char *) realloc((line), (buf_size*=2)*sizeof(char));
+        }
+        /* code */
+    }
+    line[r] = '\0';
+    return line;
+    
+}
+
+void parse_data(data *in, char* line, int row)
+{
+    int cols = (in->num_input+1) + (in->num_output+1);
+    for(int col = 0; col < cols; col++)
+    {
+        const double val = atof(strtok(col == 0 ? line : NULL, " "));
+        if(col < (in->num_input+1))
+            in->target_in[row][col] = val;
+        else
+            in->target[row][col - (in->num_input+1)] = val;
+    }
+}
+
+data *get_data(char *path, int num_inputs, int num_outputs){
+    FILE *file = fopen(path, "r");
+    data *new_dat;
+    if (!file){
+        printf("No file at: %s\n", path);
+    }
+    int num_rows = get_lines(path);
+    new_dat = (data *) malloc(sizeof(data));
+    new_dat->target_in = init_2d(num_rows+1, num_inputs+3);
+    new_dat->target = init_2d(num_rows+1, num_outputs+5);
+    new_dat->num_input = num_inputs;
+    new_dat->num_output = num_outputs;
+    new_dat->num_rows = num_rows;
+
+    for (int i=0; i < num_rows; i++){
+        char *line = get_ln(file);
+        printf("%s\n", line);
+        //fflush(stdout);
+        parse_data(new_dat, line, i);
+        free(line);
+    }
+    fclose(file);
+    return new_dat;
+}
+
 double **init_2d(int rows, int columns){
     double **r = (double **) malloc((rows) * sizeof(double*));
     for(int i=0; i < columns; i++){
