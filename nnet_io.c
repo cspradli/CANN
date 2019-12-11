@@ -1,5 +1,13 @@
 #include "nnet_io.h"
 
+double **init_2d(int rows, int columns){
+    double **r = (double **) malloc((rows) * sizeof(double*));
+    for(int i=0; i < columns; i++){
+        r[i] = (double*) malloc((columns) * sizeof(double));
+    }
+    return r;
+}
+
 void nnet_save(cann_double *nnet, char *path){
     FILE* const file = fopen(path, "w");
     printf("    Printing to file %s", path);
@@ -29,4 +37,14 @@ cann_double *nnet_load(char *path){
     for (i = 0; i < ((num_hidden+1)*(num_output+1)); i++) fscanf(file, "%lf\n", &nnet->output[i]);
     fclose(file);
     return nnet;
+}
+
+void free_data(data *in){
+    for (int i =0; i < in->num_rows; i++){
+        free(in->target_in[i]);
+        free(in->target[i]);
+    }
+    free(in->target_in);
+    free(in->target);
+    free(in);
 }
