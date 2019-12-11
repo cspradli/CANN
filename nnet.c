@@ -8,7 +8,7 @@
 #include <pthread.h>
 #include <math.h>
 #include "nnet.h"
-
+#include "nnet_io.h"
 
 
 
@@ -28,13 +28,13 @@ cann_double *init_model_double(int num_training, int num_inputs, int num_hidden,
     nnet->num_hidden   = num_hidden;
     nnet->num_outputs  = num_outputs;
     nnet->num_training = num_training;
-    nnet->s_hidden     = (double *) calloc(((num_training+1)*(num_hidden+1)), sizeof(double));
+    /*nnet->s_hidden     = (double *) calloc(((num_training+1)*(num_hidden+1)), sizeof(double));
     nnet->s_out        = (double *) calloc(((num_training+1)*(num_outputs+1)), sizeof(double));
     nnet->d_out        = (double *) calloc((num_outputs+1), sizeof(double));
     nnet->s_do         = (double *) calloc((num_hidden+1), sizeof(double));
     nnet->d_hidden     = (double *) calloc((num_hidden+1), sizeof(double));
     nnet->dw_IH        = (double *) calloc(((num_training+1)*(num_hidden+1)), sizeof(double));
-    nnet->dw_HO        = (double *) calloc(((num_training+1)*(num_hidden+1)), sizeof(double));
+    nnet->dw_HO        = (double *) calloc(((num_training+1)*(num_hidden+1)), sizeof(double));*/
     nnet->hidden       = (double *) calloc(((num_training+1)*(num_hidden+1)), sizeof(double));
     nnet->output       = (double *) calloc(((num_training+1)*(num_outputs+1)), sizeof(double));
     nnet->hidden_weights = (double *) calloc(((num_inputs+1)*(num_hidden+1)), sizeof(double));
@@ -56,7 +56,7 @@ cann_double *model_fit(cann_double *nnet, int num_training, int num_input, int n
     
     //double bias_dih[num_hidden+1], bias_who[num_output+1], bias_dho[num_output+1], bias_wih[num_hidden+1];
 
-    double err, eta = 0.5, alpha = 0.95;
+    double err, eta = 0.01, alpha = 0.9;
     
     int hiddenX, outputX, w_ihX, w_hoX;
 
@@ -207,7 +207,6 @@ cann_double *model_fit(cann_double *nnet, int num_training, int num_input, int n
     copy_array(nnet->output_weights,  w_HO, ((num_hidden+1)*(num_output+1)));
     //nnet->lr = lr;
     copy_array(nnet->output, output, ((num_training+1)*(num_output+1)));
-    print_all(nnet);
     return nnet;
 }
 
@@ -219,13 +218,6 @@ void free_nnet(cann_double *in){
     free(in->hidden_weights);
     free(in->output);
     free(in->hidden);
-    free(in->dw_HO);
-    free(in->dw_IH);
-    free(in->d_hidden);
-    free(in->s_do);
-    free(in->d_out);
-    free(in->s_out);
-    free(in->s_hidden);
     free(in);
 }
 

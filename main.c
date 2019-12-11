@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "server.h"
+#include "nnet_io.h"
 int main(int argc, char const *argv[])
 {   
     pid_t pid;
@@ -31,7 +32,12 @@ int main(int argc, char const *argv[])
 
     nnet = model_fit(nnet, numTrainingSets, numInputs, numHidden, numOutputs, input, output, 10000, 0.03);
     print_all(nnet);
+    nnet_save(nnet, "./yee");
     free_nnet(nnet);
+    cann_double *my_net;
+    my_net = nnet_load("./yee");
+    print_all(my_net);
+    free_nnet(my_net);
     } else {
         printf("Usage: ./my-nnet y(y/n) (if yes)username@host.edu \n(y/n for running on server)\n(username@host.edu to use as server to run on)\n");
     }

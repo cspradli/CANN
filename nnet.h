@@ -1,3 +1,5 @@
+#ifndef nnet_h
+#define nnet_h
 /**
  * NNET header file
  * Date: 12/08/19
@@ -19,13 +21,6 @@ typedef struct cann_double{
     int num_outputs;
     int num_training;
     double lr;
-    double *s_hidden;
-    double *s_out;
-    double *d_out;
-    double *s_do;
-    double *d_hidden;
-    double *dw_IH;
-    double *dw_HO;
     double *hidden;
     double *output;
     double *hidden_weights; 
@@ -122,4 +117,6 @@ void print_all(cann_double *in);
 void save_all(cann_double *in);
 
 void read_all(FILE *in);
+
+#endif /* server_h */
 
