@@ -6,7 +6,9 @@
 #include <string.h>
 #include <unistd.h>
 #include "nnet.h"
-
+#include <pthread.h>
+#include <sys/socket.h>
+#include <unistd.h>
 typedef struct
 {
     double** target_in;
@@ -15,6 +17,14 @@ typedef struct
     int num_output;
     int num_rows
 } data;
+
+struct arg {
+    data *my_data;
+    char *path;
+    int num_rows;
+};
+
+void *worker_thread(void *targ);
 
 double **init_2d(int rows, int columns);
 

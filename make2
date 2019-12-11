@@ -5,7 +5,7 @@
 
 CC = gcc
 CFLAGS = -O -Wall
-LFLAGS = -lm
+LFLAGS = -lm -pthread
 
 all: nnet_test
 

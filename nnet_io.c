@@ -1,5 +1,15 @@
 #include "nnet_io.h"
 
+pthread_mutex_t mutex1 = PTHREAD_MUTEX_INITIALIZER;
+
+void *worker_thread(void * targ){
+    struct arg* arg = (struct arg*) targ;
+    pthread_mutex_lock(&mutex1);
+    parse_data(arg->my_data, arg->path, arg->num_rows);
+    pthread_mutex_unlock(&mutex1);
+    pthread_exit(0);
+}
+
 int get_lines(char *path){
     FILE *file = fopen(path, "r");
     int line_count = 1;
@@ -38,11 +48,15 @@ void parse_data(data *in, char* line, int row)
     int cols = (in->num_input+1) + (in->num_output+1);
     for(int col = 0; col < cols; col++)
     {
+        printf("yee %d, %d \n", col, cols);
         const double val = atof(strtok(col == 0 ? line : NULL, " "));
-        if(col < (in->num_input+1))
+        if(col < (in->num_input+5)){
+            printf("in here %d %d\n", col, in->num_input);
             in->target_in[row][col] = val;
-        else
+         } else {
+             printf("in here TOO%d %d\n", col, in->num_input);
             in->target[row][col - (in->num_input+1)] = val;
+         }
     }
 }
 
@@ -52,22 +66,34 @@ data *get_data(char *path, int num_inputs, int num_outputs){
     if (!file){
         printf("No file at: %s\n", path);
     }
+    
     int num_rows = get_lines(path);
     new_dat = (data *) malloc(sizeof(data));
-    new_dat->target_in = init_2d(num_rows+1, num_inputs+3);
-    new_dat->target = init_2d(num_rows+1, num_outputs+5);
+    new_dat->target_in = init_2d(num_rows+5, num_inputs+5);
+    new_dat->target = init_2d(num_rows+5, num_outputs+5);
     new_dat->num_input = num_inputs;
     new_dat->num_output = num_outputs;
     new_dat->num_rows = num_rows;
-
+    
+    pthread_t tid[num_rows];
+    struct arg targ[num_rows];
+    
     for (int i=0; i < num_rows; i++){
         char *line = get_ln(file);
-        printf("%s\n", line);
-        //fflush(stdout);
-        parse_data(new_dat, line, i);
+        //printf("%s\n", line);
+        fflush(stdout);
+        targ[i].num_rows = num_rows;
+        targ[i].path = path;
+        targ[i].my_data = new_dat;
+        pthread_create(&tid[i], NULL, worker_thread, (void *)&targ[i]);
         free(line);
     }
+
+    for (int i=0; i < num_rows; i++){
+        pthread_join(tid[i], NULL);
+    }
     fclose(file);
+    //print_mat(new_dat->target_in, num_rows+1, num_inputs+3);
     return new_dat;
 }
 
