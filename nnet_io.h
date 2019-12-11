@@ -24,6 +24,8 @@ struct arg {
     int num_rows;
 };*/
 
+int check_load(int argc, char const *argv[]);
+
 void *worker_thread(void *targ);
 
 double **init_2d(int rows, int columns);

@@ -29,13 +29,21 @@ typedef struct cann_double{
     double *output_weights;
 } cann_double;
 
+
+/*
 struct arg {
-    int size;
+ //   double *a;
+ //   double *b;
+ //   int p;
+ //   int x;
+ //   int y;
+   int size;
     double *a;
     double *b;
-//    int argc;
+ //   int argc;
 //    char **argv;
-};
+};*/
+
 
 
 /**
