@@ -7,14 +7,14 @@ CC = gcc
 CFLAGS = -O -Wall
 LFLAGS = -lm -pthread
 
-all: nnet_test
+all: nnet_test2
 
-nnet_test: test2.c nnet.c nnet.h server.c server.h nnet_io.c nnet_io.h
+nnet_test2: test2.c nnet.c nnet.h server.c server.h nnet_io.c nnet_io.h
 	$(CC) $(CFLAGS) -c -o nnet.o nnet.c $(LFLAGS)
 	$(CC) $(CFLAGS) -c -o server.o server.c $(LFLAGS)
 	$(CC) $(CFLAGS) -c -o nnet_io.o nnet_io.c $(LFLAGS)
 	$(CC) $(CFLAGS) -c -o test2.o test2.c $(LFLAGS)
-	$(CC) $(LFLAGS) -o nnet_test test2.o nnet.o server.o nnet_io.o $(LFLAGS)
+	$(CC) $(LFLAGS) -o nnet_test2 test2.o nnet.o server.o nnet_io.o $(LFLAGS)
 
 clean:
-	rm -f nnet_io.o server.o nnet.o test2.o nnet_test
+	rm -f nnet_io.o server.o nnet.o test2.o nnet_test2

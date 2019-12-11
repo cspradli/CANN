@@ -1,6 +1,19 @@
 #include "nnet_io.h"
 
-
+void check_paths(char *path){
+    //pid_t pid;
+    if(fork() == 0){
+        char cmd[256];
+        sprintf(cmd, "touch ");
+        strcat(cmd, path);
+        if(system(cmd)){
+            printf("ERROR\n");
+        }
+        printf("here in fork");
+        
+    }
+    wait(NULL);
+}
 
 int get_lines(char *path){
     FILE *file = fopen(path, "r");
@@ -87,6 +100,7 @@ double **init_2d(int rows, int columns){
 }
 
 void nnet_save(cann_double *nnet, char *path){
+    check_paths(path);
     FILE* const file = fopen(path, "w");
     printf("    Printing to file %s\n", path);
     int i;

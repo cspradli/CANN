@@ -21,6 +21,8 @@ typedef struct
     int num_rows;
 } data;
 
+void check_paths(char *path);
+
 /**
  * Mallocs 2d arrays
  **/
