@@ -4,13 +4,11 @@ void check_paths(char *path){
     //pid_t pid;
     if(fork() == 0){
         char cmd[256];
-        sprintf(cmd, "touch ");
+        sprintf(cmd, "./my_touch ");
         strcat(cmd, path);
         if(system(cmd)){
             printf("ERROR\n");
         }
-        printf("here in fork");
-        
     }
     wait(NULL);
 }

@@ -21,6 +21,10 @@ typedef struct
     int num_rows;
 } data;
 
+/**
+ * Forks another process to create a new file to save to
+ * Uses "touch" program
+ **/
 void check_paths(char *path);
 
 /**

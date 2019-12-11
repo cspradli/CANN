@@ -28,6 +28,7 @@ int main(int argc, char const *argv[])
 ///*
     cann_double *mynnet = nnet_load("./models/nnet2");
     mynnet = model_fit(mynnet, numTrainingSets, numInputs, numHidden, numOutputs, input, output, 1000, 0.3);
+    nnet_save(mynnet, "./models/mynnet");
     print_all(mynnet);
     free_nnet(mynnet);
 //*/
